@@ -4,14 +4,16 @@ describe('Shape', function() {
     shape = new Shape();
   });
 
-  it('should have a width and height', function() {
+  it('has a width and height', function() {
     expect(shape.width()).not.toBeNull();
     expect(shape.height()).not.toBeNull();
   });
 
-  it('should have a position', function() {
-    expect(shape.x()).toEqual(0);
-    expect(shape.y()).toEqual(0);
+  describe('position', function() {
+    it('is initially at 0, 0', function() {
+      expect(shape.x()).toEqual(0);
+      expect(shape.y()).toEqual(0);
+    });
   });
 
   describe('setting the position', function() {
@@ -20,7 +22,7 @@ describe('Shape', function() {
       shape.y(7);
     });
 
-    it('should update the x and y coordinates', function() {
+    it('updates the x and y coordinates', function() {
       expect(shape.x()).toEqual(5);
       expect(shape.y()).toEqual(7);
     });
