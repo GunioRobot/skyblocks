@@ -1,7 +1,7 @@
 describe('Field', function() {
   var field;
   beforeEach(function() {
-    field = new Field();
+    field = new SkyBlocks.field();
   });
 
   it('is 10 x 16', function() {
@@ -24,7 +24,7 @@ describe('Field', function() {
   describe('setting the active shape', function() {
     var shape;
     beforeEach(function() {
-      shape = new Shape();
+      shape = new SkyBlocks.shape();
       field.activeShape(shape);
     });
 
@@ -55,7 +55,7 @@ describe('Field', function() {
 
   describe('effect of gravity on active shape', function() {
     beforeEach(function() {
-      shape = new Shape();
+      shape = new SkyBlocks.shape();
       field.activeShape(shape);
       field.gravity(2.5); // 2.5 blocks per second
     });

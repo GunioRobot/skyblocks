@@ -1,10 +1,9 @@
 describe('Pattern', function() {
 
   describe('defining a pattern using a block, width, height, and hex code rotations', function() {
-    var greenBlock, pattern;
+    var pattern;
     beforeEach(function() {
-      greenBlock = new Block('green');
-      pattern = Pattern.define(greenBlock, 3, 3, [0x78, 0x192, 0x3C, 0x93] ); // L shape
+      pattern = new SkyBlocks.pattern(3, 3, [0x78, 0x192, 0x3C, 0x93] ); // L shape
     });
 
     it('sets the patterns width and height', function() {
@@ -12,39 +11,33 @@ describe('Pattern', function() {
       expect(pattern.height()).toEqual(3);
     });
 
-    it('sets the patterns rotation count', function() {
-      expect(pattern.rotationCount()).toEqual(4);
-    });
-
     it('adds the pattern to all available patterns', function() {
-      expect(Pattern.patterns).toContain(pattern);
+      expect(SkyBlocks.patterns).toContain(pattern);
     });
 
-    it('creates the correct block grids', function() {
-      var g = greenBlock;
-      var n = null;
-
-      var expectedGrids = [
-        [[n,g,n],
-         [n,g,n],
-         [g,g,n]],
-        [[g,n,n],
-         [g,g,g],
-         [n,n,n]],
-        [[n,g,g],
-         [n,g,n],
-         [n,g,n]],
-        [[n,n,n],
-         [g,g,g],
-         [n,n,g]]
+    it('creates the correct matrices', function() {
+      var v = pattern.value();
+      var matrices = [
+        [[0,v,0],
+         [0,v,0],
+         [v,v,0]],
+        [[v,0,0],
+         [v,v,v],
+         [0,0,0]],
+        [[0,v,v],
+         [0,v,0],
+         [0,v,0]],
+        [[0,0,0],
+         [v,v,v],
+         [0,0,v]]
       ];
 
-      for(var i = 0; i < pattern.rotationCount(); i++) {
-        var grid = pattern.rotationGrid(i);
-        var expectedGrid = expectedGrids[i];
-        for(var x = 0; x < pattern.width(); x++)
-          for(var y = 0; y < pattern.height(); y++)
-            expect(grid[x][y]).toEqual(expectedGrid[x][y]);
+      for( var i = 0; i < pattern.transforms().length; i++ ) {
+        var matrix = pattern.matrices()[i];
+        var expected = matrices[i];
+        for( var x = 0; x < pattern.width(); x++ )
+          for( var y = 0; y < pattern.height(); y++ )
+            expect( matrix[x][y] ).toEqual( expected[x][y] );
       }
     });
   });

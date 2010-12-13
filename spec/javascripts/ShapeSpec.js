@@ -1,7 +1,7 @@
 describe('Shape', function() {
   var shape;
   beforeEach(function() {
-    shape = new Shape();
+    shape = new SkyBlocks.shape();
   });
 
   it('has a width and height', function() {
@@ -13,13 +13,13 @@ describe('Shape', function() {
     expect(shape.pattern()).not.toBeNull();
   });
 
-  describe('grid', function() {
-    it('is set to the same blocks as the first rotation of the shape pattern', function() {
-      var shapeGrid = shape.grid();
-      var patternGrid = shape.pattern().rotationGrid(0);
+  describe('matrix', function() {
+    it('is set to the first matrix of the shape pattern', function() {
+      var shapeMatrix = shape.matrix();
+      var patternMatrix = shape.pattern().matrices[0];
       for(var x = 0; x < shape.width(); x++)
         for(var y = 0; y< shape.height(); y++)
-          expect(shapeGrid[x][y]).toEqual(patternGrid[x][y]);
+          expect(shapeMatrix[x][y]).toEqual(patternMatrix[x][y]);
     });
   });
 
@@ -46,7 +46,7 @@ describe('Shape', function() {
     it('updates the rotation index', function() {
       var current = shape.rotationIndex();
       var expected = current + 1;
-      if(expected >= shape.pattern().rotationCount())
+      if(expected >= shape.pattern().matrices().length)
         expected = 0;
       shape.rotate(1);
       expect(shape.rotationIndex()).toEqual(expected);
@@ -54,14 +54,14 @@ describe('Shape', function() {
 
     it('restarts when passing last rotation', function() {
       var initial = shape.rotationIndex(); 
-      for(var i = 0; i < shape.pattern().rotationCount(); i++)
+      for(var i = 0; i < shape.pattern().matrices().length; i++)
         shape.rotate(1);
       expect(shape.rotationIndex()).toEqual(initial);
     });
 
     it('updates the grid to the patterns next rotation grid', function() {
       shape.rotate(1);
-      var expectedGrid = shape.pattern().rotationGrid(shape.rotationIndex);
+      var expectedGrid = shape.pattern().matrices()[shape.rotationIndex];
       for(var x = 0; x < shape.width(); x++)
         for(var y = 0; y < shape.height(); y++)
           expect(shapeGrid[x][y]).toEqual(expectedGrid[x][y]);
@@ -73,21 +73,21 @@ describe('Shape', function() {
       var current = shape.rotationIndex();
       var expected = current - 1;
       if(expected < 0)
-        expected = shape.pattern().rotationCount() - 1;
+        expected = shape.pattern().matrices().length - 1;
       shape.rotate(-1);
       expect(shape.rotationIndex()).toEqual(expected);
     });
 
     it('restarts when passing last rotation', function() {
       var initial = shape.rotationIndex(); 
-      for(var i = 0; i < shape.pattern().rotationCount(); i++)
+      for(var i = 0; i < shape.pattern().matrices().length; i++)
         shape.rotate(-1);
       expect(shape.rotationIndex()).toEqual(initial);
     });
 
     it('updates the grid to the patterns next rotation grid', function() {
       shape.rotate(-1);
-      var expectedGrid = shape.pattern().rotationGrid(shape.rotationIndex);
+      var expectedGrid = shape.pattern().matrices()[shape.rotationIndex];
       for(var x = 0; x < shape.width(); x++)
         for(var y = 0; y< shape.height(); y++)
           expect(shapeGrid[x][y]).toEqual(expectedGrid[x][y]);
