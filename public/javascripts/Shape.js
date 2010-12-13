@@ -15,4 +15,20 @@ function Shape() {
       return y;
     y = val;
   }
+
+  var pattern = Pattern.random();
+  this.pattern = function() { return pattern; }
+
+  this.grid = function() { return pattern.rotationGrid(0); }
+
+  var rotationIndex = 0;
+  this.rotationIndex = function() { return rotationIndex; }
+
+  this.rotate = function(direction) {
+    rotationIndex += direction;
+    if(rotationIndex == pattern.rotationCount())
+      rotationIndex = 0;
+    else if(rotationIndex < 0)
+      rotationIndex = pattern.rotationCount() - 1;
+  }
 }
