@@ -12,7 +12,7 @@ describe( 'Field', function() {
   it( 'is initially empty', function() {
     for( var x = 0; x < field.width(); x++ )
       for( var y = 0; y < field.height(); y++ )
-        expect( field.block( x, y ) ).toBeNull();
+        expect( field.grid().blocks()[x][y] ).toEqual( 0 );
   });
 
   describe( 'active shape', function() {

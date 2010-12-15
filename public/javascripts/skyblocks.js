@@ -25,14 +25,38 @@ Object.prototype.attr = function( name, initialValue ) {
 }
 
 /*
+ * SkyBlocks.grid
+ * helper class to create a grid of blocks
+ */
+SkyBlocks.grid = function( width, height, blockValue, hex ) {
+  var self = this;
+
+  self.attr( 'width', width );
+  self.attr( 'height', height );
+  self.attr( 'blocks', new Array( self.width() ) );
+
+  // convert the hex code into an array using binary math
+  var n = 0, size = ( self.width() * self.height() );
+  for( var y = 0; y < self.height(); y++ ) {
+    for( var x = 0; x < self.width(); x++ ) {
+      if( !self.blocks()[x] ) self.blocks()[x] = new Array( self.height() );
+      var f = Math.pow( 2, size - 1 - n );
+      self.blocks()[x][y] = ( ( hex & f ) / f ) > 0 ? blockValue : 0;
+      n++;
+    }
+  }
+}
+
+/*
  * SkyBlocks.field
- * two dimensional matrix representing the main game area
+ * two dimensional grid representing the main game area
  */
 SkyBlocks.field = function() {
   var self = this;
 
   self.attr( 'width', 10 );
   self.attr( 'height', 16 );
+  self.attr( 'grid', new SkyBlocks.grid( self.width(), self.height(), 0x0 ) );
   self.attr( 'gravity', 0.0 );
   self.attr( 'activeShape', null );
 
@@ -40,10 +64,6 @@ SkyBlocks.field = function() {
     // position the shape at the top center of the field
     self.activeShape().x( Math.floor( ( self.width() - self.activeShape().width() ) / 2 ) );
     self.activeShape().y( -self.activeShape().height() ); 
-  }
-
-  self.block = function( x, y ) { 
-    return null; 
   }
 
   self.update = function( elapsed ) {
@@ -63,21 +83,12 @@ SkyBlocks.pattern = function( width, height, transforms ) {
   self.attr( 'width', width );
   self.attr( 'height', height );
   self.attr( 'transforms', transforms );
-  self.attr( 'matrices', [] );
+  self.attr( 'grids', [] );
 
-  // convert the hex transforms into actual matrices
+  // convert the hex transforms into actual grids
   for( var i = 0; i < self.transforms().length; i++ ) {
-    var matrix = new Array( self.width() );
-    var n = 0, size = ( self.width() * self.height() );
-    for( var y = 0; y < self.height(); y++ ) {
-      for( var x = 0; x < self.width(); x++ ) {
-        if( !matrix[x] ) matrix[x] = new Array( self.height() );
-        var f = Math.pow( 2, size - 1 - n );
-        matrix[x][y] = ( ( self.transforms()[i] & f ) / f ) > 0 ? self.value() : 0;
-        n++;
-      }
-    }
-    self.matrices()[i] = matrix;
+    var grid = new SkyBlocks.grid( self.width(), self.height(), self.value(), self.transforms()[i] );
+    self.grids()[i] = grid;
   }
 
   SkyBlocks.patterns.push( self );
@@ -107,22 +118,22 @@ SkyBlocks.randomPattern = function() {
 SkyBlocks.shape = function() {
   var self = this;
 
-  self.attr( 'width', 0 );
-  self.attr( 'height', 0 );
   self.attr( 'x', 0 );
   self.attr( 'y', 0 );
   self.attr( 'pattern', SkyBlocks.randomPattern() );
+  self.attr( 'width', self.pattern().width() );
+  self.attr( 'height', self.pattern().height() );
   self.attr( 'rotationIndex', 0 );
 
-  self.matrix = function() { 
-    return self.pattern().matrices[ self.rotationIndex() ]; 
+  self.grid = function() { 
+    return self.pattern().grids()[ self.rotationIndex() ]; 
   }
 
   self.rotate = function( direction ) {
     self.rotationIndex( self.rotationIndex() + direction );
-    if( self.rotationIndex() == self.pattern().matrices().length )
+    if( self.rotationIndex() == self.pattern().grids().length )
       self.rotationIndex( 0 );
     else if( self.rotationIndex() < 0 )
-      self.rotationIndex( self.pattern().matrices().length - 1 );
+      self.rotationIndex( self.pattern().grids().length - 1 );
   }
 }

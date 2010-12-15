@@ -1,8 +1,9 @@
 describe( 'Pattern', function() {
-  describe( 'defining a pattern using a block, width, height, and hex code rotations', function() {
-    var pattern;
+  describe( 'defining a pattern using width, height, and hex code rotations', function() {
+    var pattern, transforms;
     beforeEach( function() {
-      pattern = new SkyBlocks.pattern( 3, 3, [ 0x78, 0x192, 0x3C, 0x93 ] ); // L shape
+      transforms = [ 0x78, 0x192, 0x3C, 0x93 ]; // L shape
+      pattern = new SkyBlocks.pattern( 3, 3, transforms );
     });
 
     it( 'sets the patterns width and height', function() {
@@ -10,13 +11,17 @@ describe( 'Pattern', function() {
       expect( pattern.height() ).toEqual( 3 );
     });
 
+    it( 'sets the transforms', function() {
+      expect( pattern.transforms() ).toEqual( transforms );
+    });
+
     it( 'adds the pattern to all available patterns', function() {
       expect( SkyBlocks.patterns ).toContain( pattern );
     });
 
-    it( 'creates the correct matrices', function() {
+    it( 'creates the correct blocks', function() {
       var v = pattern.value();
-      var matrices = [
+      var expected = [
         [[0,v,0],
          [0,v,0],
          [v,v,0]],
@@ -32,11 +37,11 @@ describe( 'Pattern', function() {
       ];
 
       for( var i = 0; i < pattern.transforms().length; i++ ) {
-        var matrix = pattern.matrices()[i];
-        var expected = matrices[i];
+        var patternBlocks = pattern.grids()[i].blocks();
+        var expectedBlocks = expected[i];
         for( var x = 0; x < pattern.width(); x++ )
           for( var y = 0; y < pattern.height(); y++ )
-            expect( matrix[x][y] ).toEqual( expected[x][y] );
+            expect( patternBlocks[x][y] ).toEqual( expectedBlocks[x][y] );
       }
     });
   });

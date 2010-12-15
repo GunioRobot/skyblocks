@@ -1,0 +1,3 @@
+[ ] Create a jasmine helper to expect multi-dimensional array equality
+[ ] Create a jasmine helper to expect SkyBlocks.grid equality, that delegates
+    to the array equality helper
