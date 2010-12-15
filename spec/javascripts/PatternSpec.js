@@ -1,21 +1,20 @@
-describe('Pattern', function() {
-
-  describe('defining a pattern using a block, width, height, and hex code rotations', function() {
+describe( 'Pattern', function() {
+  describe( 'defining a pattern using a block, width, height, and hex code rotations', function() {
     var pattern;
-    beforeEach(function() {
-      pattern = new SkyBlocks.pattern(3, 3, [0x78, 0x192, 0x3C, 0x93] ); // L shape
+    beforeEach( function() {
+      pattern = new SkyBlocks.pattern( 3, 3, [ 0x78, 0x192, 0x3C, 0x93 ] ); // L shape
     });
 
-    it('sets the patterns width and height', function() {
-      expect(pattern.width()).toEqual(3);
-      expect(pattern.height()).toEqual(3);
+    it( 'sets the patterns width and height', function() {
+      expect( pattern.width() ).toEqual( 3 );
+      expect( pattern.height() ).toEqual( 3 );
     });
 
-    it('adds the pattern to all available patterns', function() {
-      expect(SkyBlocks.patterns).toContain(pattern);
+    it( 'adds the pattern to all available patterns', function() {
+      expect( SkyBlocks.patterns ).toContain( pattern );
     });
 
-    it('creates the correct matrices', function() {
+    it( 'creates the correct matrices', function() {
       var v = pattern.value();
       var matrices = [
         [[0,v,0],

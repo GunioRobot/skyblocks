@@ -8,14 +8,18 @@
 
 var SkyBlocks = {};
 
-Object.prototype.attr = function(name, initialValue) {
-  this['_' + name] = initialValue;
-  this[name] = function(val) { 
-    if(typeof val == 'undefined')
-      return this['_' + name];
-    this['_' + name] = val;
-    var changedCallback = this['_' + name + 'Changed'];
-    if(changedCallback)
+/* 
+ * Object attribute helper
+ * dynamically add an attribute get/set method to an object
+ */
+Object.prototype.attr = function( name, initialValue ) {
+  this[ '_' + name ] = initialValue;
+  this[ name ] = function( val ) { 
+    if( typeof val == 'undefined' )
+      return this[ '_' + name ];
+    this[ '_' + name ] = val;
+    var changedCallback = this[ '_' + name + 'Changed' ];
+    if( changedCallback )
       changedCallback();
   }
 }
