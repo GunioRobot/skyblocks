@@ -62,7 +62,7 @@ SkyBlocks.field = function() {
 
 /* 
  * SkyBlocks.figure
- * a rotatable figure made out of grids
+ * a figure represented in multiple transformations by grids
  */
 SkyBlocks.figure = function( width, height, transforms ) {
   var self = this;
@@ -136,7 +136,8 @@ SkyBlocks.widget = function( figure, field ) {
           continue;
         var widgetBlock = self.grid().blocks()[x][y];
         // TODO: shouldn't be modifying the field with code like this.
-        // Extend the field with the capability to embed a grid
+        // Extend the field with the capability to embed a block or 
+        // remove this loop and add the ability to embed an entire grid to the field
         field.grid().blocks()[fieldX][fieldY] = widgetBlock;
       }
     }
