@@ -26,7 +26,7 @@ Object.prototype.attr = function( name, initialValue ) {
 
 /*
  * SkyBlocks.grid
- * helper class to create a grid of blocks
+ * a grid of blocks
  */
 SkyBlocks.grid = function( width, height, blockValue, hex ) {
   var self = this;
@@ -49,7 +49,7 @@ SkyBlocks.grid = function( width, height, blockValue, hex ) {
 
 /*
  * SkyBlocks.field
- * two dimensional grid representing the main game area
+ * a grid representing the main game area
  */
 SkyBlocks.field = function() {
   var self = this;
@@ -58,38 +58,11 @@ SkyBlocks.field = function() {
   self.attr( 'height', 16 );
   self.attr( 'grid', new SkyBlocks.grid( self.width(), self.height(), 0x0 ) );
   self.attr( 'gravity', 0.0 );
-  self.attr( 'widget', null );
-
-  self._widgetChanged = function() {
-    if( self.widget() == null ) return;
-    // position the widget at the top center of the field
-    self.widget().x( Math.floor( ( self.width() - self.widget().width() ) / 2 ) );
-    self.widget().y( -self.widget().height() ); 
-  }
-
-  self.embed = function() {
-    for( var x = 0; x < widget.width(); x++ ) {
-      for( var y = 0; y < widget.height(); y++ ) {
-        var fieldX = widget.x() + x;
-        var fieldY = widget.y() + y;
-        if( fieldX < 0 || fieldX >= self.width() || fieldY < 0 || fieldY > self.height() )
-          continue;
-        var widgetBlock = widget.grid().blocks()[x][y];
-        self.grid().blocks()[fieldX][fieldY] = widgetBlock;
-      }
-    }
-    self.widget( null );
-  }
-
-  self.update = function( elapsed ) {
-    // apply gravity to the active widget
-    widget.y( widget.y() + ( elapsed / 1000.0 ) * self.gravity() ); 
-  }
 }
 
 /* 
  * SkyBlocks.figure
- * helper class to define a figure for widgets
+ * a rotatable figure made out of grids
  */
 SkyBlocks.figure = function( width, height, transforms ) {
   var self = this;
@@ -122,22 +95,24 @@ SkyBlocks.sFigure = new SkyBlocks.figure( 3, 3, [ 0x1E, 0x99 ] );
 SkyBlocks.zFigure = new SkyBlocks.figure( 3, 3, [ 0x33, 0x5A ] );
 SkyBlocks.oFigure = new SkyBlocks.figure( 2, 2, [ 0xF ] );
 
-SkyBlocks.randomFigure = function() {
+// TODO: Test this randomness
+SkyBlocks.figure.random = function() {
   return SkyBlocks.figures[ Math.floor( Math.random() * SkyBlocks.figures.length ) ];
 }
 
 /* 
  * SkyBlocks.widget
- * Represents a widget that can be controlled in the field
+ * a figure that can be manipulated in a field
  */
-SkyBlocks.widget = function() {
+SkyBlocks.widget = function( figure, field ) {
   var self = this;
 
-  self.attr( 'x', 0 );
-  self.attr( 'y', 0 );
-  self.attr( 'figure', SkyBlocks.randomFigure() );
-  self.attr( 'width', self.figure().width() );
-  self.attr( 'height', self.figure().height() );
+  self.attr( 'figure', figure );
+  self.attr( 'field', field );
+  self.attr( 'x', Math.floor( ( field.width() - figure.width() ) / 2 ) );
+  self.attr( 'y', -figure.height() );
+  self.attr( 'width', figure.width() );
+  self.attr( 'height', figure.height() );
   self.attr( 'rotationIndex', 0 );
 
   self.grid = function() { 
@@ -150,5 +125,25 @@ SkyBlocks.widget = function() {
       self.rotationIndex( 0 );
     else if( self.rotationIndex() < 0 )
       self.rotationIndex( self.figure().grids().length - 1 );
+  }
+
+  self.embed = function() {
+    for( var x = 0; x < self.width(); x++ ) {
+      for( var y = 0; y < self.height(); y++ ) {
+        var fieldX = self.x() + x;
+        var fieldY = self.y() + y;
+        if( fieldX < 0 || fieldX >= field.width() || fieldY < 0 || fieldY > field.height() )
+          continue;
+        var widgetBlock = self.grid().blocks()[x][y];
+        // TODO: shouldn't be modifying the field with code like this.
+        // Extend the field with the capability to embed a grid
+        field.grid().blocks()[fieldX][fieldY] = widgetBlock;
+      }
+    }
+  }
+
+  self.update = function( elapsed ) {
+    // apply field gravity
+    self.y( self.y() + ( elapsed / 1000.0 ) * field.gravity() ); 
   }
 }
