@@ -1,5 +1,5 @@
 describe( 'Figure', function() {
-  describe( 'defining a figure using width, height, and hex code rotations', function() {
+  describe( 'defining a figure using width, height, and hex code transforms', function() {
     var figure, transforms;
     beforeEach( function() {
       transforms = [ 0x78, 0x192, 0x3C, 0x93 ]; // L figure
