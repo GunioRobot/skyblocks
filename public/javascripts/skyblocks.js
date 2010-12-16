@@ -58,13 +58,13 @@ SkyBlocks.field = function() {
   self.attr( 'height', 16 );
   self.attr( 'grid', new SkyBlocks.grid( self.width(), self.height(), 0x0 ) );
   self.attr( 'gravity', 0.0 );
-  self.attr( 'activeShape', null );
+  self.attr( 'shape', null );
 
-  self._activeShapeChanged = function() {
-    if( self.activeShape() == null ) return;
+  self._shapeChanged = function() {
+    if( self.shape() == null ) return;
     // position the shape at the top center of the field
-    self.activeShape().x( Math.floor( ( self.width() - self.activeShape().width() ) / 2 ) );
-    self.activeShape().y( -self.activeShape().height() ); 
+    self.shape().x( Math.floor( ( self.width() - self.shape().width() ) / 2 ) );
+    self.shape().y( -self.shape().height() ); 
   }
 
   self.embed = function() {
@@ -78,7 +78,7 @@ SkyBlocks.field = function() {
         self.grid().blocks()[fieldX][fieldY] = shapeBlock;
       }
     }
-    self.activeShape( null );
+    self.shape( null );
   }
 
   self.update = function( elapsed ) {

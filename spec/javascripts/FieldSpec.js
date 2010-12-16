@@ -15,21 +15,21 @@ describe( 'Field', function() {
         expect( field.grid().blocks()[x][y] ).toEqual( 0 );
   });
 
-  describe( 'active shape', function() {
+  describe( 'shape', function() {
     it( 'is initially null', function() {
-      expect( field.activeShape() ).toBeNull();
+      expect( field.shape() ).toBeNull();
     });
   });
 
-  describe( 'setting the active shape', function() {
+  describe( 'setting the shape', function() {
     var shape;
     beforeEach( function() {
       shape = new SkyBlocks.shape();
-      field.activeShape( shape );
+      field.shape( shape );
     });
 
-    it( 'updates the active shape', function() {
-      expect( field.activeShape() ).toBe( shape );
+    it( 'updates the shape', function() {
+      expect( field.shape() ).toBe( shape );
     });
 
     it( 'moves the shape at the top center of the field', function() {
@@ -53,10 +53,10 @@ describe( 'Field', function() {
     });
   });
 
-  describe( 'effect of gravity on active shape', function() {
+  describe( 'effect of gravity on shape', function() {
     beforeEach( function() {
       shape = new SkyBlocks.shape();
-      field.activeShape( shape );
+      field.shape( shape );
       field.gravity( 2.5 ); // 2.5 blocks per second
     });
 
@@ -72,13 +72,13 @@ describe( 'Field', function() {
   describe( 'embed', function() {
     beforeEach( function() {
       shape = new SkyBlocks.shape();
-      field.activeShape( shape );
+      field.shape( shape );
       shape.x( 4 );
       shape.y( 5 );
       field.embed();
     });
 
-    it( 'copies the active shape blocks into the field blocks', function() {
+    it( 'copies the shape blocks into the field blocks', function() {
       for( var x = 0; x < shape.width(); x++ ) {
         for( var y = 0; y < shape.height(); y++ ) {
           var fieldX = shape.x() + x;
@@ -92,8 +92,8 @@ describe( 'Field', function() {
       }
     });
 
-    it( 'nulls out the active shape', function() {
-      expect( field.activeShape() ).toBeNull();
+    it( 'nulls out the shape', function() {
+      expect( field.shape() ).toBeNull();
     });
   });
 });
