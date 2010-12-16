@@ -68,4 +68,32 @@ describe( 'Field', function() {
       expect( shape.y() ).toEqual( initialY + 7.5 );
     });
   });
+
+  describe( 'embed', function() {
+    beforeEach( function() {
+      shape = new SkyBlocks.shape();
+      field.activeShape( shape );
+      shape.x( 4 );
+      shape.y( 5 );
+      field.embed();
+    });
+
+    it( 'copies the active shape blocks into the field blocks', function() {
+      for( var x = 0; x < shape.width(); x++ ) {
+        for( var y = 0; y < shape.height(); y++ ) {
+          var fieldX = shape.x() + x;
+          var fieldY = shape.y() + y;
+          if( fieldX < 0 || fieldX >= field.width() || fieldY < 0 || fieldY > field.height() )
+            continue;
+          var fieldBlock = field.grid().blocks()[fieldX][fieldY];
+          var shapeBlock = shape.grid().blocks()[x][y];
+          expect( fieldBlock ).toEqual( shapeBlock );
+        }
+      }
+    });
+
+    it( 'nulls out the active shape', function() {
+      expect( field.activeShape() ).toBeNull();
+    });
+  });
 });

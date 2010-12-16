@@ -61,9 +61,24 @@ SkyBlocks.field = function() {
   self.attr( 'activeShape', null );
 
   self._activeShapeChanged = function() {
+    if( self.activeShape() == null ) return;
     // position the shape at the top center of the field
     self.activeShape().x( Math.floor( ( self.width() - self.activeShape().width() ) / 2 ) );
     self.activeShape().y( -self.activeShape().height() ); 
+  }
+
+  self.embed = function() {
+    for( var x = 0; x < shape.width(); x++ ) {
+      for( var y = 0; y < shape.height(); y++ ) {
+        var fieldX = shape.x() + x;
+        var fieldY = shape.y() + y;
+        if( fieldX < 0 || fieldX >= self.width() || fieldY < 0 || fieldY > self.height() )
+          continue;
+        var shapeBlock = shape.grid().blocks()[x][y];
+        self.grid().blocks()[fieldX][fieldY] = shapeBlock;
+      }
+    }
+    self.activeShape( null );
   }
 
   self.update = function( elapsed ) {
