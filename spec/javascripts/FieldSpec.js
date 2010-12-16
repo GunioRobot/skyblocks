@@ -15,28 +15,28 @@ describe( 'Field', function() {
         expect( field.grid().blocks()[x][y] ).toEqual( 0 );
   });
 
-  describe( 'shape', function() {
+  describe( 'widget', function() {
     it( 'is initially null', function() {
-      expect( field.shape() ).toBeNull();
+      expect( field.widget() ).toBeNull();
     });
   });
 
-  describe( 'setting the shape', function() {
-    var shape;
+  describe( 'setting the widget', function() {
+    var widget;
     beforeEach( function() {
-      shape = new SkyBlocks.shape();
-      field.shape( shape );
+      widget = new SkyBlocks.widget();
+      field.widget( widget );
     });
 
-    it( 'updates the shape', function() {
-      expect( field.shape() ).toBe( shape );
+    it( 'updates the widget', function() {
+      expect( field.widget() ).toBe( widget );
     });
 
-    it( 'moves the shape at the top center of the field', function() {
-      var x = Math.floor( ( field.width() - shape.width() ) / 2 );
-      var y = -shape.height();
-      expect( shape.x() ).toEqual( x );
-      expect( shape.y() ).toEqual( y );
+    it( 'moves the widget at the top center of the field', function() {
+      var x = Math.floor( ( field.width() - widget.width() ) / 2 );
+      var y = -widget.height();
+      expect( widget.x() ).toEqual( x );
+      expect( widget.y() ).toEqual( y );
     });
   });
 
@@ -53,47 +53,47 @@ describe( 'Field', function() {
     });
   });
 
-  describe( 'effect of gravity on shape', function() {
+  describe( 'effect of gravity on widget', function() {
     beforeEach( function() {
-      shape = new SkyBlocks.shape();
-      field.shape( shape );
+      widget = new SkyBlocks.widget();
+      field.widget( widget );
       field.gravity( 2.5 ); // 2.5 blocks per second
     });
 
-    it( 'drops the shape down correctly over time', function() {
-      var initialX = shape.x();
-      var initialY = shape.y();
+    it( 'drops the widget down correctly over time', function() {
+      var initialX = widget.x();
+      var initialY = widget.y();
       field.update( 3000 ); // advance 3 seconds
-      expect( shape.x() ).toEqual( initialX );
-      expect( shape.y() ).toEqual( initialY + 7.5 );
+      expect( widget.x() ).toEqual( initialX );
+      expect( widget.y() ).toEqual( initialY + 7.5 );
     });
   });
 
   describe( 'embed', function() {
     beforeEach( function() {
-      shape = new SkyBlocks.shape();
-      field.shape( shape );
-      shape.x( 4 );
-      shape.y( 5 );
+      widget = new SkyBlocks.widget();
+      field.widget( widget );
+      widget.x( 4 );
+      widget.y( 5 );
       field.embed();
     });
 
-    it( 'copies the shape blocks into the field blocks', function() {
-      for( var x = 0; x < shape.width(); x++ ) {
-        for( var y = 0; y < shape.height(); y++ ) {
-          var fieldX = shape.x() + x;
-          var fieldY = shape.y() + y;
+    it( 'copies the widget blocks into the field blocks', function() {
+      for( var x = 0; x < widget.width(); x++ ) {
+        for( var y = 0; y < widget.height(); y++ ) {
+          var fieldX = widget.x() + x;
+          var fieldY = widget.y() + y;
           if( fieldX < 0 || fieldX >= field.width() || fieldY < 0 || fieldY > field.height() )
             continue;
           var fieldBlock = field.grid().blocks()[fieldX][fieldY];
-          var shapeBlock = shape.grid().blocks()[x][y];
-          expect( fieldBlock ).toEqual( shapeBlock );
+          var widgetBlock = widget.grid().blocks()[x][y];
+          expect( fieldBlock ).toEqual( widgetBlock );
         }
       }
     });
 
-    it( 'nulls out the shape', function() {
-      expect( field.shape() ).toBeNull();
+    it( 'nulls out the widget', function() {
+      expect( field.widget() ).toBeNull();
     });
   });
 });

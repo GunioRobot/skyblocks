@@ -58,43 +58,43 @@ SkyBlocks.field = function() {
   self.attr( 'height', 16 );
   self.attr( 'grid', new SkyBlocks.grid( self.width(), self.height(), 0x0 ) );
   self.attr( 'gravity', 0.0 );
-  self.attr( 'shape', null );
+  self.attr( 'widget', null );
 
-  self._shapeChanged = function() {
-    if( self.shape() == null ) return;
-    // position the shape at the top center of the field
-    self.shape().x( Math.floor( ( self.width() - self.shape().width() ) / 2 ) );
-    self.shape().y( -self.shape().height() ); 
+  self._widgetChanged = function() {
+    if( self.widget() == null ) return;
+    // position the widget at the top center of the field
+    self.widget().x( Math.floor( ( self.width() - self.widget().width() ) / 2 ) );
+    self.widget().y( -self.widget().height() ); 
   }
 
   self.embed = function() {
-    for( var x = 0; x < shape.width(); x++ ) {
-      for( var y = 0; y < shape.height(); y++ ) {
-        var fieldX = shape.x() + x;
-        var fieldY = shape.y() + y;
+    for( var x = 0; x < widget.width(); x++ ) {
+      for( var y = 0; y < widget.height(); y++ ) {
+        var fieldX = widget.x() + x;
+        var fieldY = widget.y() + y;
         if( fieldX < 0 || fieldX >= self.width() || fieldY < 0 || fieldY > self.height() )
           continue;
-        var shapeBlock = shape.grid().blocks()[x][y];
-        self.grid().blocks()[fieldX][fieldY] = shapeBlock;
+        var widgetBlock = widget.grid().blocks()[x][y];
+        self.grid().blocks()[fieldX][fieldY] = widgetBlock;
       }
     }
-    self.shape( null );
+    self.widget( null );
   }
 
   self.update = function( elapsed ) {
-    // apply gravity to the active shape
-    shape.y( shape.y() + ( elapsed / 1000.0 ) * self.gravity() ); 
+    // apply gravity to the active widget
+    widget.y( widget.y() + ( elapsed / 1000.0 ) * self.gravity() ); 
   }
 }
 
 /* 
- * SkyBlocks.pattern
- * helper class to define a pattern for shapes
+ * SkyBlocks.figure
+ * helper class to define a figure for widgets
  */
-SkyBlocks.pattern = function( width, height, transforms ) {
+SkyBlocks.figure = function( width, height, transforms ) {
   var self = this;
 
-  self.attr( 'value', SkyBlocks.patterns.length + 1 );
+  self.attr( 'value', SkyBlocks.figures.length + 1 );
   self.attr( 'width', width );
   self.attr( 'height', height );
   self.attr( 'transforms', transforms );
@@ -106,49 +106,49 @@ SkyBlocks.pattern = function( width, height, transforms ) {
     self.grids()[i] = grid;
   }
 
-  SkyBlocks.patterns.push( self );
+  SkyBlocks.figures.push( self );
 }
 
 /* 
- * define all the standard patterns
+ * define all the standard figures
  * l, j, t, i, s, z, o
  */
-SkyBlocks.patterns = [];
-SkyBlocks.lPattern = new SkyBlocks.pattern( 3, 3, [ 0x3C, 0x192, 0x78, 0x93 ] );
-SkyBlocks.jPattern = new SkyBlocks.pattern( 3, 3, [ 0x138, 0xD2, 0x39, 0x96 ] ); 
-SkyBlocks.tPattern = new SkyBlocks.pattern( 3, 3, [ 0xB8, 0x9A, 0x3A, 0xB2 ] );
-SkyBlocks.iPattern = new SkyBlocks.pattern( 4, 4, [ 0xF00, 0x4444 ] ); 
-SkyBlocks.sPattern = new SkyBlocks.pattern( 3, 3, [ 0x1E, 0x99 ] );
-SkyBlocks.zPattern = new SkyBlocks.pattern( 3, 3, [ 0x33, 0x5A ] );
-SkyBlocks.oPattern = new SkyBlocks.pattern( 2, 2, [ 0xF ] );
+SkyBlocks.figures = [];
+SkyBlocks.lFigure = new SkyBlocks.figure( 3, 3, [ 0x3C, 0x192, 0x78, 0x93 ] );
+SkyBlocks.jFigure = new SkyBlocks.figure( 3, 3, [ 0x138, 0xD2, 0x39, 0x96 ] ); 
+SkyBlocks.tFigure = new SkyBlocks.figure( 3, 3, [ 0xB8, 0x9A, 0x3A, 0xB2 ] );
+SkyBlocks.iFigure = new SkyBlocks.figure( 4, 4, [ 0xF00, 0x4444 ] ); 
+SkyBlocks.sFigure = new SkyBlocks.figure( 3, 3, [ 0x1E, 0x99 ] );
+SkyBlocks.zFigure = new SkyBlocks.figure( 3, 3, [ 0x33, 0x5A ] );
+SkyBlocks.oFigure = new SkyBlocks.figure( 2, 2, [ 0xF ] );
 
-SkyBlocks.randomPattern = function() {
-  return SkyBlocks.patterns[ Math.floor( Math.random() * SkyBlocks.patterns.length ) ];
+SkyBlocks.randomFigure = function() {
+  return SkyBlocks.figures[ Math.floor( Math.random() * SkyBlocks.figures.length ) ];
 }
 
 /* 
- * SkyBlocks.shape
- * Represents a shape that can be controlled in the field
+ * SkyBlocks.widget
+ * Represents a widget that can be controlled in the field
  */
-SkyBlocks.shape = function() {
+SkyBlocks.widget = function() {
   var self = this;
 
   self.attr( 'x', 0 );
   self.attr( 'y', 0 );
-  self.attr( 'pattern', SkyBlocks.randomPattern() );
-  self.attr( 'width', self.pattern().width() );
-  self.attr( 'height', self.pattern().height() );
+  self.attr( 'figure', SkyBlocks.randomFigure() );
+  self.attr( 'width', self.figure().width() );
+  self.attr( 'height', self.figure().height() );
   self.attr( 'rotationIndex', 0 );
 
   self.grid = function() { 
-    return self.pattern().grids()[ self.rotationIndex() ]; 
+    return self.figure().grids()[ self.rotationIndex() ]; 
   }
 
   self.rotate = function( direction ) {
     self.rotationIndex( self.rotationIndex() + direction );
-    if( self.rotationIndex() == self.pattern().grids().length )
+    if( self.rotationIndex() == self.figure().grids().length )
       self.rotationIndex( 0 );
     else if( self.rotationIndex() < 0 )
-      self.rotationIndex( self.pattern().grids().length - 1 );
+      self.rotationIndex( self.figure().grids().length - 1 );
   }
 }
