@@ -135,12 +135,34 @@ SkyBlocks.widget = function( figure, field ) {
         if( fieldX < 0 || fieldX >= field.width() || fieldY < 0 || fieldY > field.height() )
           continue;
         var widgetBlock = self.grid().blocks()[x][y];
-        // TODO: shouldn't be modifying the field with code like this.
-        // Extend the field with the capability to embed a block or 
-        // remove this loop and add the ability to embed an entire grid to the field
-        field.grid().blocks()[fieldX][fieldY] = widgetBlock;
+        if( widgetBlock > 0 )
+          // TODO: shouldn't be modifying the field with code like this.
+          // Extend the field with the capability to embed a block or 
+          // remove this loop and add the ability to embed an entire grid to the field
+          field.grid().blocks()[fieldX][fieldY] = widgetBlock;
       }
     }
+  }
+
+  self.collides = function() {
+    for( var x = 0; x < self.width(); x++ ) {
+      for( var y = 0; y < self.height(); y++ ) {
+        var fieldX = self.x() + x;
+        var fieldY = self.y() + y;
+        var widgetBlock = self.grid().blocks()[x][y];
+        if( widgetBlock == 0 )
+          continue;
+        var outOfBounds = fieldX < 0 || fieldX >= field.width() || fieldY >= field.height();
+        if( outOfBounds )
+          return true;
+        if( fieldX < 0 || fieldX >= field.width() || fieldY < 0 || fieldY > field.height() )
+          continue;
+        var fieldBlock = field.grid().blocks()[fieldX][fieldY];
+        if( fieldBlock > 0 )
+          return true;
+      }
+    }
+    return false;
   }
 
   self.update = function( elapsed ) {

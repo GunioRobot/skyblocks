@@ -1,9 +1,10 @@
 describe( 'Widget', function() {
-  var figure, field, widget;
+  var figure, field, widget, singleBlockFigure;
   beforeEach( function() {
     figure = SkyBlocks.figure.random();
     field = new SkyBlocks.field();
     widget = new SkyBlocks.widget( figure, field );
+    singleBlockFigure = new SkyBlocks.figure( 3, 3, [0x10] );
   });
 
   it( 'figure and field are set', function() {
@@ -141,6 +142,79 @@ describe( 'Widget', function() {
           expect( fieldBlock ).toEqual( widgetBlock );
         }
       }
+    });
+
+    it( 'does not embed empty space over already embedded blocks', function() {
+      // embed two single block widgets, on offset by one block
+      var widget1 = new SkyBlocks.widget( singleBlockFigure, field );
+      var widget2 = new SkyBlocks.widget( singleBlockFigure, field );
+      widget1.x( 0 );
+      widget1.y( 0 );
+      widget1.embed();
+      widget2.x( 1 );
+      widget2.y( 1 );
+      widget2.embed();
+      // make sure both blocks are in the field afterwads
+      var block1 = field.grid().blocks()[1][1];
+      var block2 = field.grid().blocks()[2][2];
+      expect( block1 ).not.toEqual( 0 );
+      expect( block2 ).not.toEqual( 0 );
+    });
+  });
+
+  describe( 'collision', function() {
+    beforeEach( function() {
+      widget = new SkyBlocks.widget( singleBlockFigure, field );
+      widget.y( 5 );
+    });
+
+    it( 'does not initally collide', function() {
+      expect( widget.collides() ).toBeFalsy();
+    });
+
+    it( 'does not collide if out of bounds to the left of the field but all blocks are in bounds', function() {
+      widget.x( -1 );
+      expect( widget.collides() ).toBeFalsy();
+    });
+
+    it( 'collides if any blocks are out of bounds to the left of the field', function() {
+      widget.x( -2 );
+      expect( widget.collides() ).toBeTruthy();
+    });
+
+    it( 'does not collide if out of bounds to the right of the field but all blocks are in bounds', function() {
+      widget.x( field.width() - 2 );
+      expect( widget.collides() ).toBeFalsy();
+    });
+
+    it( 'collides if any blocks are out of bounds to the right of the field', function() {
+      widget.x( field.width() - 1 );
+      expect( widget.collides() ).toBeTruthy();
+    });
+
+    it( 'does not collide if blocks are out of bounds on the top of the field', function() {
+      widget.y( -2 );
+      expect( widget.collides() ).toBeFalsy();
+    });
+
+    it( 'does not collide if out if below the bottom of the field but blocks are in bounds', function() {
+      widget.y( field.height() - 2 );
+      expect( widget.collides() ).toBeFalsy();
+    });
+
+    it( 'collides if any blocks are below the bottom of the field', function() {
+      widget.y( field.height() - 1 );
+      expect( widget.collides() ).toBeTruthy();
+    });
+
+    it( 'collides if overlaps any other blocks embedded in the field', function() {
+      var embedWidget = new SkyBlocks.widget( singleBlockFigure, field );
+      embedWidget.x( 2 );
+      embedWidget.y( 5 );
+      embedWidget.embed();
+      widget.x( 2 );
+      widget.y( 5 );
+      expect( widget.collides() ).toBeTruthy();
     });
   });
 });
