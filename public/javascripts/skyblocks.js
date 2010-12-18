@@ -119,17 +119,17 @@ SkyBlocks.widget = function( figure, field ) {
     return self.figure().grids()[ self.rotationIndex() ]; 
   }
 
+  self._rotationIndexChanged = function() {
+    if( self.rotationIndex() == self.figure().grids().length )
+      self.rotationIndex( 0 );
+    else if( self.rotationIndex() < 0 )
+      self.rotationIndex( self.figure().grids().length - 1 );
+  }
+
   self.rotate = function( direction ) {
-    var rotate = function( d ) {
-      self.rotationIndex( self.rotationIndex() + d );
-      if( self.rotationIndex() == self.figure().grids().length )
-        self.rotationIndex( 0 );
-      else if( self.rotationIndex() < 0 )
-        self.rotationIndex( self.figure().grids().length - 1 );
-    }
-    rotate( direction );
+    self.rotationIndex( self.rotationIndex() + direction );
     if( self.collides() )
-      rotate( -direction );
+      self.rotationIndex( self.rotationIndex() - direction );
   }
 
   self.left = function() {
