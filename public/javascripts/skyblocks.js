@@ -62,6 +62,30 @@ SkyBlocks.field = function() {
   self.outOfBounds = function( x, y ) {
     return x < 0 || x >= self.width() || y < 0 || y >= self.height();
   }
+
+  self.clearLines = function() {
+    var newGrid = new SkyBlocks.grid( self.width(), self.height(), 0x0 );
+    for( var y = newGridY = self.height() - 1, lines = 0; y >= 0; y-- ) {
+      if( self.lineCompleted( y ) )
+        lines++;
+      else {
+        for( var x = 0; x < self.width(); x++ )
+          newGrid.blocks()[x][newGridY] = self.grid().blocks()[x][y];
+        newGridY--;
+      }
+    }
+    self.grid( newGrid );
+    return lines;
+  }
+
+  self.lineCompleted = function( y ) {
+    for( var x = 0; x < self.width(); x++ ) {
+      if( self.grid().blocks()[x][y] == 0 )
+        return false;
+    }
+    return true;
+  }
+
 }
 
 /* 
