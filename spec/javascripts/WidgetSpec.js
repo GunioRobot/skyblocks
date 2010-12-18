@@ -55,60 +55,6 @@ describe( 'Widget', function() {
     });
   });
 
-  describe( 'counter clockwise rotation', function() {
-    it( 'updates the rotation index', function() {
-      var current = widget.rotationIndex();
-      var expected = current + 1;
-      if( expected >= widget.figure().transforms().length )
-        expected = 0;
-      widget.rotate( 1 );
-      expect( widget.rotationIndex() ).toEqual( expected );
-    });
-
-    it( 'restarts when passing last rotation', function() {
-      var initial = widget.rotationIndex(); 
-      for( var i = 0; i < widget.figure().transforms().length; i++ )
-        widget.rotate( 1 );
-      expect( widget.rotationIndex() ).toEqual( initial );
-    });
-
-    it( 'updates the grid to the figures next transform grid', function() {
-      widget.rotate( 1 );
-      var widgetBlocks = widget.grid().blocks();
-      var expectedBlocks = widget.figure().grids()[ widget.rotationIndex() ].blocks();
-      for( var x = 0; x < widget.width(); x++ )
-        for( var y = 0; y < widget.figure().height(); y++ )
-          expect( widgetBlocks[x][y] ).toEqual( expectedBlocks[x][y] );
-    });
-  });
-
-  describe( 'clockwise rotation', function() {
-    it( 'updates the rotation index', function() {
-      var current = widget.rotationIndex();
-      var expected = current - 1;
-      if( expected < 0 )
-        expected = widget.figure().transforms().length - 1;
-      widget.rotate( -1 );
-      expect( widget.rotationIndex() ).toEqual( expected );
-    });
-
-    it( 'restarts when passing last rotation', function() {
-      var initial = widget.rotationIndex(); 
-      for( var i = 0; i < widget.figure().transforms().length; i++ )
-        widget.rotate( -1 );
-      expect( widget.rotationIndex() ).toEqual( initial );
-    });
-
-    it( 'updates the grid to the figures next transform grid', function() {
-      widget.rotate( -1 );
-      var widgetBlocks = widget.grid().blocks();
-      var expectedBlocks = widget.figure().grids()[ widget.rotationIndex() ].blocks();
-      for( var x = 0; x < widget.width(); x++ )
-        for( var y = 0; y< widget.figure().height(); y++ )
-          expect( widgetBlocks[x][y] ).toEqual( expectedBlocks[x][y] );
-    });
-  });
-
   describe( 'effect of field gravity on widget', function() {
     beforeEach( function() {
       field.gravity( 2.5 ); // 2.5 blocks per second
@@ -215,6 +161,88 @@ describe( 'Widget', function() {
       widget.x( 2 );
       widget.y( 5 );
       expect( widget.collides() ).toBeTruthy();
+    });
+  });
+
+  describe( 'counter clockwise rotation', function() {
+    it( 'updates the rotation index', function() {
+      var current = widget.rotationIndex();
+      var expected = current + 1;
+      if( expected >= widget.figure().transforms().length )
+        expected = 0;
+      widget.rotate( 1 );
+      expect( widget.rotationIndex() ).toEqual( expected );
+    });
+
+    it( 'restarts when passing last rotation', function() {
+      var initial = widget.rotationIndex(); 
+      for( var i = 0; i < widget.figure().transforms().length; i++ )
+        widget.rotate( 1 );
+      expect( widget.rotationIndex() ).toEqual( initial );
+    });
+
+    it( 'updates the grid to the figures next transform grid', function() {
+      widget.rotate( 1 );
+      var widgetBlocks = widget.grid().blocks();
+      var expectedBlocks = widget.figure().grids()[ widget.rotationIndex() ].blocks();
+      for( var x = 0; x < widget.width(); x++ )
+        for( var y = 0; y < widget.figure().height(); y++ )
+          expect( widgetBlocks[x][y] ).toEqual( expectedBlocks[x][y] );
+    });
+
+    it( 'does not rotate if rotation would cause collision', function() {
+      // Embed an i widget into the top left corner of the field
+      var iWidget = new SkyBlocks.widget( SkyBlocks.iFigure, field ); 
+      iWidget.x( 0 );
+      iWidget.y( 0 );
+      iWidget.embed();
+      // Take another i widget in slightly offset and try to rotate it
+      var iWidget = new SkyBlocks.widget( SkyBlocks.iFigure, field ); 
+      iWidget.x( 1 );
+      iWidget.y( 0 );
+      iWidget.rotate( 1 );
+      expect( iWidget.rotationIndex() ).toEqual( 0 );
+    });
+  });
+
+  describe( 'clockwise rotation', function() {
+    it( 'updates the rotation index', function() {
+      var current = widget.rotationIndex();
+      var expected = current - 1;
+      if( expected < 0 )
+        expected = widget.figure().transforms().length - 1;
+      widget.rotate( -1 );
+      expect( widget.rotationIndex() ).toEqual( expected );
+    });
+
+    it( 'restarts when passing last rotation', function() {
+      var initial = widget.rotationIndex(); 
+      for( var i = 0; i < widget.figure().transforms().length; i++ )
+        widget.rotate( -1 );
+      expect( widget.rotationIndex() ).toEqual( initial );
+    });
+
+    it( 'updates the grid to the figures next transform grid', function() {
+      widget.rotate( -1 );
+      var widgetBlocks = widget.grid().blocks();
+      var expectedBlocks = widget.figure().grids()[ widget.rotationIndex() ].blocks();
+      for( var x = 0; x < widget.width(); x++ )
+        for( var y = 0; y< widget.figure().height(); y++ )
+          expect( widgetBlocks[x][y] ).toEqual( expectedBlocks[x][y] );
+    });
+
+    it( 'does not rotate if rotation would cause collision', function() {
+      // Embed an i widget into the top left corner of the field
+      var iWidget = new SkyBlocks.widget( SkyBlocks.iFigure, field ); 
+      iWidget.x( 0 );
+      iWidget.y( 0 );
+      iWidget.embed();
+      // Take another i widget in slightly offset and try to rotate it
+      var iWidget = new SkyBlocks.widget( SkyBlocks.iFigure, field ); 
+      iWidget.x( 1 );
+      iWidget.y( 0 );
+      iWidget.rotate( 1 );
+      expect( iWidget.rotationIndex() ).toEqual( 0 );
     });
   });
 });

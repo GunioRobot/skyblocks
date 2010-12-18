@@ -102,7 +102,7 @@ SkyBlocks.figure.random = function() {
 
 /* 
  * SkyBlocks.widget
- * a figure that can be manipulated in a field
+ * a figure that can be manipulated and interacts with a field
  */
 SkyBlocks.widget = function( figure, field ) {
   var self = this;
@@ -120,11 +120,16 @@ SkyBlocks.widget = function( figure, field ) {
   }
 
   self.rotate = function( direction ) {
-    self.rotationIndex( self.rotationIndex() + direction );
-    if( self.rotationIndex() == self.figure().grids().length )
-      self.rotationIndex( 0 );
-    else if( self.rotationIndex() < 0 )
-      self.rotationIndex( self.figure().grids().length - 1 );
+    var rotate = function( d ) {
+      self.rotationIndex( self.rotationIndex() + d );
+      if( self.rotationIndex() == self.figure().grids().length )
+        self.rotationIndex( 0 );
+      else if( self.rotationIndex() < 0 )
+        self.rotationIndex( self.figure().grids().length - 1 );
+    }
+    rotate( direction );
+    if( self.collides() )
+      rotate( -direction );
   }
 
   self.embed = function() {
