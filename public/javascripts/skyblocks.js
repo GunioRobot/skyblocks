@@ -62,20 +62,20 @@ SkyBlocks.field = function() {
 
 /* 
  * SkyBlocks.figure
- * a figure represented in multiple transformations by grids
+ * a figure represented in multiple rotations by grids
  */
-SkyBlocks.figure = function( width, height, transforms ) {
+SkyBlocks.figure = function( width, height, rotations ) {
   var self = this;
 
   self.attr( 'value', SkyBlocks.figures.length + 1 );
   self.attr( 'width', width );
   self.attr( 'height', height );
-  self.attr( 'transforms', transforms );
+  self.attr( 'rotations', rotations );
   self.attr( 'grids', [] );
 
-  // convert the hex transforms into actual grids
-  for( var i = 0; i < self.transforms().length; i++ ) {
-    var grid = new SkyBlocks.grid( self.width(), self.height(), self.value(), self.transforms()[i] );
+  // convert the hex rotations into actual grids
+  for( var i = 0; i < self.rotations().length; i++ ) {
+    var grid = new SkyBlocks.grid( self.width(), self.height(), self.value(), self.rotations()[i] );
     self.grids()[i] = grid;
   }
 
@@ -126,28 +126,10 @@ SkyBlocks.widget = function( figure, field ) {
       self.rotationIndex( self.figure().grids().length - 1 );
   }
 
-  self.rotate = function( direction ) {
-    self.rotationIndex( self.rotationIndex() + direction );
+  self.transform = function( transformation ) {
+    self[ transformation[0] ]( self[ transformation[0] ]() + transformation[1] );
     if( self.collides() )
-      self.rotationIndex( self.rotationIndex() - direction );
-  }
-
-  self.left = function() {
-    self.x( self.x() - 1 );
-    if( self.collides() )
-      self.x( self.x() + 1 );
-  }
-
-  self.right = function() {
-    self.x( self.x() + 1 );
-    if( self.collides() )
-      self.x( self.x() - 1 );
-  }
-
-  self.down = function() {
-    self.y( self.y() + 1 );
-    if( self.collides() )
-      self.y( self.y() - 1 );
+      self[ transformation[0] ]( self[ transformation[0] ]() - transformation[1] );
   }
 
   self.drop = function() {
@@ -204,3 +186,13 @@ SkyBlocks.widget = function( figure, field ) {
     }
   }
 }
+
+/*
+ * Widget transformations
+ */
+SkyBlocks.widget.transformations = {}
+SkyBlocks.widget.transformations.clockwise = [ 'rotationIndex', -1 ];
+SkyBlocks.widget.transformations.counterClockwise = [ 'rotationIndex', 1 ];
+SkyBlocks.widget.transformations.left = [ 'x', -1 ];
+SkyBlocks.widget.transformations.right = [ 'x', 1 ];
+SkyBlocks.widget.transformations.down = [ 'y', 1 ]

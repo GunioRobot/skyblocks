@@ -71,7 +71,7 @@ describe( 'Widget', function() {
     it( 'only moves the widget down until it collides', function() {
       var initialX = widget.x();
       var initialY = widget.y();
-      widget.rotate( 1 ); // rotate to make the i widget vertical
+      widget.transform( SkyBlocks.widget.transformations.counterClockwise ); // rotate to make the i widget vertical
       widget.update( 30000 ); // advance 30 seconds
       expect( widget.x() ).toEqual( initialX );
       // should only be at the bottom of the field
@@ -178,21 +178,21 @@ describe( 'Widget', function() {
     it( 'updates the rotation index', function() {
       var current = widget.rotationIndex();
       var expected = current + 1;
-      if( expected >= widget.figure().transforms().length )
+      if( expected >= widget.figure().rotations().length )
         expected = 0;
-      widget.rotate( 1 );
+      widget.transform( SkyBlocks.widget.transformations.counterClockwise );
       expect( widget.rotationIndex() ).toEqual( expected );
     });
 
     it( 'restarts when passing last rotation', function() {
       var initial = widget.rotationIndex(); 
-      for( var i = 0; i < widget.figure().transforms().length; i++ )
-        widget.rotate( 1 );
+      for( var i = 0; i < widget.figure().rotations().length; i++ )
+        widget.transform( SkyBlocks.widget.transformations.counterClockwise );
       expect( widget.rotationIndex() ).toEqual( initial );
     });
 
-    it( 'updates the grid to the figures next transform grid', function() {
-      widget.rotate( 1 );
+    it( 'updates the grid to the figures next rotation grid', function() {
+      widget.transform( SkyBlocks.widget.transformations.counterClockwise );
       var widgetBlocks = widget.grid().blocks();
       var expectedBlocks = widget.figure().grids()[ widget.rotationIndex() ].blocks();
       for( var x = 0; x < widget.width(); x++ )
@@ -210,7 +210,7 @@ describe( 'Widget', function() {
       var iWidget = new SkyBlocks.widget( SkyBlocks.iFigure, field ); 
       iWidget.x( 1 );
       iWidget.y( 0 );
-      iWidget.rotate( 1 );
+      iWidget.transform( SkyBlocks.widget.transformations.counterClockwise );
       expect( iWidget.rotationIndex() ).toEqual( 0 );
     });
   });
@@ -220,20 +220,20 @@ describe( 'Widget', function() {
       var current = widget.rotationIndex();
       var expected = current - 1;
       if( expected < 0 )
-        expected = widget.figure().transforms().length - 1;
-      widget.rotate( -1 );
+        expected = widget.figure().rotations().length - 1;
+      widget.transform( SkyBlocks.widget.transformations.clockwise );
       expect( widget.rotationIndex() ).toEqual( expected );
     });
 
     it( 'restarts when passing last rotation', function() {
       var initial = widget.rotationIndex(); 
-      for( var i = 0; i < widget.figure().transforms().length; i++ )
-        widget.rotate( -1 );
+      for( var i = 0; i < widget.figure().rotations().length; i++ )
+        widget.transform( SkyBlocks.widget.transformations.clockwise );
       expect( widget.rotationIndex() ).toEqual( initial );
     });
 
-    it( 'updates the grid to the figures next transform grid', function() {
-      widget.rotate( -1 );
+    it( 'updates the grid to the figures next rotation grid', function() {
+      widget.transform( SkyBlocks.widget.transformations.clockwise )
       var widgetBlocks = widget.grid().blocks();
       var expectedBlocks = widget.figure().grids()[ widget.rotationIndex() ].blocks();
       for( var x = 0; x < widget.width(); x++ )
@@ -251,7 +251,7 @@ describe( 'Widget', function() {
       var iWidget = new SkyBlocks.widget( SkyBlocks.iFigure, field ); 
       iWidget.x( 1 );
       iWidget.y( 0 );
-      iWidget.rotate( 1 );
+      iWidget.transform( SkyBlocks.widget.transformations.counterClockwise );
       expect( iWidget.rotationIndex() ).toEqual( 0 );
     });
   });
@@ -259,14 +259,14 @@ describe( 'Widget', function() {
   describe( 'movement left', function() {
     it( 'descreases the x coordinate by 1', function() {
       var initialX = widget.x();
-      widget.left();
+      widget.transform( SkyBlocks.widget.transformations.left );
       expect( widget.x() ).toEqual( initialX - 1 );
     });
 
     it( 'does not move if movement would case collision', function() {
       var initialX = 0;
       widget.x( initialX );
-      widget.left();
+      widget.transform( SkyBlocks.widget.transformations.left );
       expect( widget.x() ).toEqual( initialX );
     });
   });
@@ -274,14 +274,14 @@ describe( 'Widget', function() {
   describe( 'movement right', function() {
     it( 'increases the x coordinate by 1', function() {
       var initialX = widget.x();
-      widget.right();
+      widget.transform( SkyBlocks.widget.transformations.right );
       expect( widget.x() ).toEqual( initialX + 1 );
     });
 
     it( 'does not move if movement would case collision', function() {
       var initialX = field.width() - widget.width();
       widget.x( initialX );
-      widget.right();
+      widget.transform( SkyBlocks.widget.transformations.right );
       expect( widget.x() ).toEqual( initialX );
     });
   });
@@ -289,22 +289,22 @@ describe( 'Widget', function() {
   describe( 'movement down', function() {
     it( 'increases the y coordinate by 1', function() {
       var initialY = widget.y();
-      widget.down();
+      widget.transform( SkyBlocks.widget.transformations.down );
       expect( widget.y() ).toEqual( initialY + 1 );
     });
 
     it( 'does not move if movement would case collision', function() {
       var initialY = field.height() - widget.height();
-      widget.rotate( 1 ); // rotate to make the i widget vertical
+      widget.transform( SkyBlocks.widget.transformations.counterClockwise ); // rotate to make the i widget vertical
       widget.y( initialY );
-      widget.down();
+      widget.transform( SkyBlocks.widget.transformations.down );
       expect( widget.y() ).toEqual( initialY );
     });
   });
 
   describe( 'drop', function() {
     it( 'drops the widget all the way down until it collides', function() {
-      widget.rotate( 1 ); // rotate to make the i widget vertical
+      widget.transform( SkyBlocks.widget.transformations.counterClockwise ); // rotate to make the i widget vertical
       // should drop all the way to the bottom
       var expectedY = field.height() - widget.height();
       widget.drop();
