@@ -37,7 +37,7 @@ describe( 'Widget', function() {
   describe( 'position', function() {
     it( 'is starts at the top center of the field', function() {
       var x = Math.floor( ( field.width() - widget.width() ) / 2 );
-      var y = -widget.height();
+      var y = 0;
       expect( widget.x() ).toEqual( x );
       expect( widget.y() ).toEqual( y );
     });
@@ -148,9 +148,14 @@ describe( 'Widget', function() {
       expect( widget.collides() ).toBeTruthy();
     });
 
-    it( 'does not collide if blocks are out of bounds on the top of the field', function() {
-      widget.y( -2 );
+    it( 'does not collide if out of bounds to the top of the field but all blocks are in bounds', function() {
+      widget.y( -1 );
       expect( widget.collides() ).toBeFalsy();
+    });
+
+    it( 'collides if any blocks are out of bounds on the top of the field', function() {
+      widget.y( -3 );
+      expect( widget.collides() ).toBeTruthy();
     });
 
     it( 'does not collide if out if below the bottom of the field but blocks are in bounds', function() {

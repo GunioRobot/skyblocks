@@ -58,6 +58,10 @@ SkyBlocks.field = function() {
   self.attr( 'height', 16 );
   self.attr( 'grid', new SkyBlocks.grid( self.width(), self.height(), 0x0 ) );
   self.attr( 'gravity', 0.0 );
+
+  self.outOfBounds = function( x, y ) {
+    return x < 0 || x >= self.width() || y < 0 || y >= self.height();
+  }
 }
 
 /* 
@@ -110,7 +114,7 @@ SkyBlocks.widget = function( figure, field ) {
   self.attr( 'figure', figure );
   self.attr( 'field', field );
   self.attr( 'x', Math.floor( ( field.width() - figure.width() ) / 2 ) );
-  self.attr( 'y', -figure.height() );
+  self.attr( 'y', 0 );
   self.attr( 'width', figure.width() );
   self.attr( 'height', figure.height() );
   self.attr( 'rotationIndex', 0 );
@@ -143,14 +147,11 @@ SkyBlocks.widget = function( figure, field ) {
       for( var y = 0; y < self.height(); y++ ) {
         var fieldX = self.x() + x;
         var fieldY = self.y() + y;
-        if( fieldX < 0 || fieldX >= field.width() || fieldY < 0 || fieldY > field.height() )
+        if( self.field().outOfBounds( fieldX, fieldY ) ) 
           continue;
-        var widgetBlock = self.grid().blocks()[x][y];
-        if( widgetBlock > 0 )
-          // TODO: shouldn't be modifying the field with code like this.
-          // Extend the field with the capability to embed a block or 
-          // remove this loop and add the ability to embed an entire grid to the field
-          field.grid().blocks()[fieldX][fieldY] = widgetBlock;
+        var block = self.grid().blocks()[x][y];
+        if( block > 0 )
+          field.grid().blocks()[fieldX][fieldY] = block;
       }
     }
   }
@@ -160,16 +161,11 @@ SkyBlocks.widget = function( figure, field ) {
       for( var y = 0; y < self.height(); y++ ) {
         var fieldX = self.x() + x;
         var fieldY = self.y() + y;
-        var widgetBlock = self.grid().blocks()[x][y];
-        if( widgetBlock == 0 )
+        if( self.grid().blocks()[x][y] == 0 )
           continue;
-        var outOfBounds = fieldX < 0 || fieldX >= field.width() || fieldY >= field.height();
-        if( outOfBounds )
+        if( self.field().outOfBounds( fieldX, fieldY ) )
           return true;
-        if( fieldX < 0 || fieldX >= field.width() || fieldY < 0 || fieldY > field.height() )
-          continue;
-        var fieldBlock = field.grid().blocks()[fieldX][fieldY];
-        if( fieldBlock > 0 )
+        if( field.grid().blocks()[fieldX][fieldY] > 0 )
           return true;
       }
     }
