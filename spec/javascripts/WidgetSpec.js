@@ -60,12 +60,22 @@ describe( 'Widget', function() {
       field.gravity( 2.5 ); // 2.5 blocks per second
     });
 
-    it( 'drops the widget down correctly over time', function() {
+    it( 'moves the widget down correctly over time', function() {
       var initialX = widget.x();
       var initialY = widget.y();
       widget.update( 3000 ); // advance 3 seconds
       expect( widget.x() ).toEqual( initialX );
       expect( widget.y() ).toEqual( initialY + 7.5 );
+    });
+
+    it( 'only moves the widget down until it collides', function() {
+      var initialX = widget.x();
+      var initialY = widget.y();
+      widget.rotate( 1 ); // rotate to make the i widget vertical
+      widget.update( 30000 ); // advance 30 seconds
+      expect( widget.x() ).toEqual( initialX );
+      // should only be at the bottom of the field
+      expect( widget.y() ).toEqual( field.height() - widget.height() );
     });
   });
 

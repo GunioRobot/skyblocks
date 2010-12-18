@@ -196,6 +196,11 @@ SkyBlocks.widget = function( figure, field ) {
 
   self.update = function( elapsed ) {
     // apply field gravity
+    var initialY = self.y();
     self.y( self.y() + ( elapsed / 1000.0 ) * field.gravity() ); 
+    if( self.collides() ) {
+      self.y( initialY );
+      self.drop();
+    }
   }
 }
