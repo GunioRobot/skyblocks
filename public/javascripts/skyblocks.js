@@ -132,6 +132,18 @@ SkyBlocks.widget = function( figure, field ) {
       rotate( -direction );
   }
 
+  self.left = function() {
+    self.x( self.x() - 1 );
+    if( self.collides() )
+      self.x( self.x() + 1 );
+  }
+
+  self.right = function() {
+    self.x( self.x() + 1 );
+    if( self.collides() )
+      self.x( self.x() - 1 );
+  }
+
   self.embed = function() {
     for( var x = 0; x < self.width(); x++ ) {
       for( var y = 0; y < self.height(); y++ ) {

@@ -1,7 +1,7 @@
 describe( 'Widget', function() {
   var figure, field, widget, singleBlockFigure;
   beforeEach( function() {
-    figure = SkyBlocks.figure.random();
+    figure = SkyBlocks.iFigure;
     field = new SkyBlocks.field();
     widget = new SkyBlocks.widget( figure, field );
     singleBlockFigure = new SkyBlocks.figure( 3, 3, [0x10] );
@@ -243,6 +243,36 @@ describe( 'Widget', function() {
       iWidget.y( 0 );
       iWidget.rotate( 1 );
       expect( iWidget.rotationIndex() ).toEqual( 0 );
+    });
+  });
+
+  describe( 'movement left', function() {
+    it( 'descreases the x coordinate by 1', function() {
+      var initialX = widget.x();
+      widget.left();
+      expect( widget.x() ).toEqual( initialX - 1 );
+    });
+
+    it( 'does not move if movement would case collision', function() {
+      var initialX = 0;
+      widget.x( initialX );
+      widget.left();
+      expect( widget.x() ).toEqual( initialX );
+    });
+  });
+
+  describe( 'movement right', function() {
+    it( 'increases the x coordinate by 1', function() {
+      var initialX = widget.x();
+      widget.right();
+      expect( widget.x() ).toEqual( initialX + 1 );
+    });
+
+    it( 'does not move if movement would case collision', function() {
+      var initialX = field.width() - widget.width();
+      widget.x( initialX );
+      widget.right();
+      expect( widget.x() ).toEqual( initialX );
     });
   });
 });
