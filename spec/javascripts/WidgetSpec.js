@@ -275,4 +275,30 @@ describe( 'Widget', function() {
       expect( widget.x() ).toEqual( initialX );
     });
   });
+
+  describe( 'movement down', function() {
+    it( 'increases the y coordinate by 1', function() {
+      var initialY = widget.y();
+      widget.down();
+      expect( widget.y() ).toEqual( initialY + 1 );
+    });
+
+    it( 'does not move if movement would case collision', function() {
+      var initialY = field.height() - widget.height();
+      widget.rotate( 1 ); // rotate to make the i widget vertical
+      widget.y( initialY );
+      widget.down();
+      expect( widget.y() ).toEqual( initialY );
+    });
+  });
+
+  describe( 'drop', function() {
+    it( 'drops the widget all the way down until it collides', function() {
+      widget.rotate( 1 ); // rotate to make the i widget vertical
+      // should drop all the way to the bottom
+      var expectedY = field.height() - widget.height();
+      widget.drop();
+      expect( widget.y() ).toEqual( expectedY );
+    });
+  });
 });

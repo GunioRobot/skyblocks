@@ -144,6 +144,18 @@ SkyBlocks.widget = function( figure, field ) {
       self.x( self.x() - 1 );
   }
 
+  self.down = function() {
+    self.y( self.y() + 1 );
+    if( self.collides() )
+      self.y( self.y() - 1 );
+  }
+
+  self.drop = function() {
+    while( !self.collides() )
+      self.y( self.y() + 1 );
+    self.y( self.y() - 1 );
+  }
+
   self.embed = function() {
     for( var x = 0; x < self.width(); x++ ) {
       for( var y = 0; y < self.height(); y++ ) {
