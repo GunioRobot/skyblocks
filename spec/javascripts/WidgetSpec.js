@@ -71,7 +71,8 @@ describe( 'Widget', function() {
     it( 'only moves the widget down until it collides', function() {
       var initialX = widget.x();
       var initialY = widget.y();
-      widget.transform( SkyBlocks.widget.transformations.counterClockwise ); // rotate to make the i widget vertical
+      // rotate to make the i widget vertical
+      widget.transform( SkyBlocks.widget.transformations.counterClockwise ); 
       widget.update( 30000 ); // advance 30 seconds
       expect( widget.x() ).toEqual( initialX );
       // should only be at the bottom of the field
@@ -300,7 +301,8 @@ describe( 'Widget', function() {
 
     it( 'does not move if movement would case collision', function() {
       var initialY = field.height() - widget.height();
-      widget.transform( SkyBlocks.widget.transformations.counterClockwise ); // rotate to make the i widget vertical
+      // rotate to make the i widget vertical
+      widget.transform( SkyBlocks.widget.transformations.counterClockwise );
       widget.y( initialY );
       widget.transform( SkyBlocks.widget.transformations.down );
       expect( widget.y() ).toEqual( initialY );
@@ -309,7 +311,8 @@ describe( 'Widget', function() {
 
   describe( 'drop', function() {
     it( 'drops the widget all the way down until it collides', function() {
-      widget.transform( SkyBlocks.widget.transformations.counterClockwise ); // rotate to make the i widget vertical
+      // rotate to make the i widget vertical
+      widget.transform( SkyBlocks.widget.transformations.counterClockwise ); 
       // should drop all the way to the bottom
       var expectedY = field.height() - widget.height();
       widget.drop();
