@@ -29,50 +29,24 @@ describe( 'Field', function() {
   });
 
   describe( 'clearing lines', function() {
-    var linesBefore = [
-      [0,1,1,1],
-      [1,1,0,1],
-      [1,1,1,1],
-      [1,1,0,1],
-      [1,1,0,1],
-      [1,1,1,1],
-      [1,1,1,1],
-      [0,1,0,1],
-      [1,1,1,1],
-      [1,1,0,1]
-    ];
-    var linesAfter = [
-      [0,0,0,1],
-      [0,0,1,0],
-      [0,0,1,1],
-      [0,0,1,0],
-      [0,0,1,0],
-      [0,0,1,1],
-      [0,0,1,1],
-      [0,0,0,0],
-      [0,0,1,1],
-      [0,0,1,0]
-    ];
     var linesCleared;
     beforeEach( function() {
-      // setup some lines
+      // setup some completed lines with incomplete lines in between
       for( var x = 0; x < field.width(); x++ ) {
-        for( var y = 0; y < 4; y++ ) {
-          var fieldY = field.height() - y - 1;
-          field.grid().blocks()[x][fieldY] = linesBefore[x][3 - y];
-        }
+        field.grid().blocks()[x][field.height() - 1] = 1;
+        field.grid().blocks()[x][field.height() - 2] = x % 2;
+        field.grid().blocks()[x][field.height() - 3] = 1;
+        field.grid().blocks()[x][field.height() - 4] = x % 2;
       }
       linesCleared = field.clearLines();
     });
 
-    it( 'clears out completed lines', function() {
-      for( var y = 0; y < 4; y++ ) {
-        for( var x = 0; x < field.width(); x++ ) {
-          var fieldY = field.height() - y - 1;
-          var fieldBlock = field.grid().blocks()[x][fieldY];
-          var expectedBlock = linesAfter[x][3 - y];
-          expect( fieldBlock ).toEqual( expectedBlock );
-        }
+    it( 'clears out completed lines and drops down remaining lines', function() {
+      for( var x = 0; x < field.width(); x++ ) {
+        expect( field.grid().blocks()[x][field.height() - 1] ).toEqual( x % 2 );
+        expect( field.grid().blocks()[x][field.height() - 2] ).toEqual( x % 2 );
+        expect( field.grid().blocks()[x][field.height() - 3] ).toEqual( 0 );
+        expect( field.grid().blocks()[x][field.height() - 4] ).toEqual( 0 );
       }
     });
 
