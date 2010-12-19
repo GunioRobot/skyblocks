@@ -6,6 +6,11 @@ describe( 'Figure', function() {
       figure = new SkyBlocks.figure( 3, 3, rotations );
     });
 
+    afterEach( function() {
+      // remove the added figure
+      SkyBlocks.figures.splice( SkyBlocks.figures.length - 1, 1 );
+    });
+
     it( 'sets the figure width and height', function() {
       expect( figure.width() ).toEqual( 3 );
       expect( figure.height() ).toEqual( 3 );

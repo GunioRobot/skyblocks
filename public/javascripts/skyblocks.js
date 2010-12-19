@@ -129,10 +129,10 @@ SkyBlocks.figure.random = function() {
 }
 
 /* 
- * SkyBlocks.widget
+ * SkyBlocks.piece
  * a figure that can be manipulated and interacts with a field
  */
-SkyBlocks.widget = function( figure, field ) {
+SkyBlocks.piece = function( figure, field ) {
   var self = this;
 
   self.attr( 'figure', figure );
@@ -196,6 +196,13 @@ SkyBlocks.widget = function( figure, field ) {
     return false;
   }
 
+  self.grounded = function() {
+    self.y( self.y() + 1 );
+    var grounded = self.collides();
+    self.y( self.y() - 1 );
+    return grounded;
+  }
+
   self.update = function( elapsed ) {
     // apply field gravity
     var initialY = self.y();
@@ -208,11 +215,42 @@ SkyBlocks.widget = function( figure, field ) {
 }
 
 /*
- * Widget transformations
+ * Piece transformations
  */
-SkyBlocks.widget.transformations = {}
-SkyBlocks.widget.transformations.clockwise = [ 'rotationIndex', -1 ];
-SkyBlocks.widget.transformations.counterClockwise = [ 'rotationIndex', 1 ];
-SkyBlocks.widget.transformations.left = [ 'x', -1 ];
-SkyBlocks.widget.transformations.right = [ 'x', 1 ];
-SkyBlocks.widget.transformations.down = [ 'y', 1 ]
+SkyBlocks.piece.transformations = {}
+SkyBlocks.piece.transformations.clockwise = [ 'rotationIndex', -1 ];
+SkyBlocks.piece.transformations.counterClockwise = [ 'rotationIndex', 1 ];
+SkyBlocks.piece.transformations.left = [ 'x', -1 ];
+SkyBlocks.piece.transformations.right = [ 'x', 1 ];
+SkyBlocks.piece.transformations.down = [ 'y', 1 ]
+
+/*
+ * SkyBlocks.game
+ * coordinates the actual gameplay
+ */
+SkyBlocks.game = function() {
+  var self = this;
+
+  self.attr( 'score', 0 );
+  self.attr( 'level', SkyBlocks.level1 );
+  self.attr( 'field', new SkyBlocks.field() );
+  self.attr( 'nextFigure', new SkyBlocks.figure.random() );
+  self.attr( 'piece', new SkyBlocks.piece( SkyBlocks.figure.random(), self.field() ) );
+
+  self.over = function() {
+    return self.piece().collides();
+  }
+
+  self.update = function( elapsed ) {
+    self.piece().update( elapsed );
+    if( self.piece().grounded() ) {
+      self.piece( new SkyBlocks.piece( self.nextFigure(), self.field() ) );
+      self.nextFigure( SkyBlocks.figure.random() );
+    }
+  }
+}
+
+/*
+ * Levels
+ */
+SkyBlocks.level1 = { level1: 1, gravity: 1.0 };
