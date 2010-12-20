@@ -244,8 +244,10 @@ SkyBlocks.game = function() {
   self.update = function( elapsed ) {
     self.piece().update( elapsed );
     if( self.piece().grounded() ) {
+      self.piece().embed();
       self.piece( new SkyBlocks.piece( self.nextFigure(), self.field() ) );
       self.nextFigure( SkyBlocks.figure.random() );
+      self.field().clearLines();
     }
   }
 }

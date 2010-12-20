@@ -36,6 +36,22 @@ describe( 'Game', function() {
       game.update( 0 );
       expect( game.piece().figure() ).toBe( nextFigure ); 
     });
+
+    it( 'embeds the piece after grounding', function() {
+      var piece = game.piece();
+      spyOn( piece, 'embed' );
+      piece.drop();
+      game.update( 0 );
+      expect( piece.embed ).toHaveBeenCalled();
+    });
+
+    it( 'clears the field lines after piece is grounded', function() {
+      var field = game.field();
+      spyOn( field, 'clearLines' );
+      game.piece().drop();
+      game.update( 0 );
+      expect( field.clearLines ).toHaveBeenCalled();
+    });
   });
 
   describe( 'next figure lifetime', function() {
