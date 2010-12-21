@@ -7,8 +7,14 @@ gem 'rails', '3.0.3'
 
 gem 'sqlite3-ruby', :require => 'sqlite3'
 
+gem 'therubyracer', :require => false
+gem 'barista', '0.7.0.pre3'
+
 group :test do
   gem 'jasmine'
+  gem 'guard'
+  gem 'guard-coffeescript'
+  gem 'rb-fsevent'
 end
 
 # Use unicorn as the web server
