@@ -232,7 +232,7 @@ SkyBlocks.game = function() {
   var self = this;
 
   self.attr( 'score', 0 );
-  self.attr( 'level', SkyBlocks.level1 );
+  self.attr( 'level', 1 );
   self.attr( 'field', new SkyBlocks.field() );
   self.attr( 'nextFigure', new SkyBlocks.figure.random() );
   self.attr( 'piece', new SkyBlocks.piece( SkyBlocks.figure.random(), self.field() ) );
@@ -241,18 +241,23 @@ SkyBlocks.game = function() {
     return self.piece().collides();
   }
 
+  var lastPieceY = 0;
   self.update = function( elapsed ) {
     self.piece().update( elapsed );
     if( self.piece().grounded() ) {
+      // increase score for quick drop
+      var linesDropped = self.piece().y() - lastPieceY;
+      self.score( self.score() + Math.floor( linesDropped / 2 ) * self.level() );
+      // embed current piece and create next piece
       self.piece().embed();
       self.piece( new SkyBlocks.piece( self.nextFigure(), self.field() ) );
       self.nextFigure( SkyBlocks.figure.random() );
-      self.field().clearLines();
+      // clear lines
+      var lines = self.field().clearLines();
+      self.score( self.score() + SkyBlocks.linePoints[lines] * self.level() );
     }
+    lastPieceY = self.piece().y();
   }
 }
 
-/*
- * Levels
- */
-SkyBlocks.level1 = { level1: 1, gravity: 1.0 };
+SkyBlocks.linePoints = [ 0, 10, 25, 60, 150 ];

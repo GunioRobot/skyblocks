@@ -12,7 +12,7 @@ describe( 'Game', function() {
 
   describe( 'level', function() {
     it( 'is initially level 1', function() {
-      expect( game.level() ).toEqual( SkyBlocks.level1 );
+      expect( game.level() ).toEqual( 1 );
     });
   });
 
@@ -77,6 +77,67 @@ describe( 'Game', function() {
       spyOn( piece, 'update' );
       game.update( 2000 );
       expect( piece.update ).toHaveBeenCalledWith( 2000 );
+    });
+  });
+
+  describe( 'dropping effect on score', function() {
+    beforeEach( function() {
+      game.score( 100 );
+    });
+
+    it( 'increases score by half the number of blocks dropped times the level number', function() {
+      var piece = game.piece();
+      var initialY = game.piece().y();
+      game.piece().drop();
+      var newY = game.piece().y();
+      game.update( 0 );
+      var blocksDropped = newY - initialY;
+      var expectedScore = 100 + Math.floor( blocksDropped / 2 ) * game.level();
+      expect( game.score() ).toEqual( expectedScore );
+    });
+
+    it( 'does not increase the score if not dropped', function() {
+      game.update( 0 );
+      expect( game.score() ).toEqual( 100 );
+    });
+  });
+
+  describe( 'clearing lines effect on score', function() {
+    var field, piece;
+    beforeEach( function() {
+      game.score( 100 );
+      game.level( 3 );
+      field = game.field();
+      piece = game.piece();
+      spyOn( piece, 'grounded' ).andReturn( true );
+    });
+
+    it( 'increases the score by 10 times level for clearing 1 line', function() {
+      spyOn( field, 'clearLines' ).andReturn( 1 );
+      game.update( 0 );
+      expect( field.clearLines ).toHaveBeenCalled();
+      expect( game.score() ).toEqual( 130 );
+    });
+
+    it( 'increases the score by 25 times level for clearing 2 lines', function() {
+      spyOn( field, 'clearLines' ).andReturn( 2 );
+      game.update( 0 );
+      expect( field.clearLines ).toHaveBeenCalled();
+      expect( game.score() ).toEqual( 175 );
+    });
+
+    it( 'increases the score by 60 times level for clearing 3 lines', function() {
+      spyOn( field, 'clearLines' ).andReturn( 3 );
+      game.update( 0 );
+      expect( field.clearLines ).toHaveBeenCalled();
+      expect( game.score() ).toEqual( 280 );
+    });
+
+    it( 'increases the score by 150 times level for clearing 4 lines', function() {
+      spyOn( field, 'clearLines' ).andReturn( 4 );
+      game.update( 0 );
+      expect( field.clearLines ).toHaveBeenCalled();
+      expect( game.score() ).toEqual( 550 );
     });
   });
 
