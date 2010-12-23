@@ -248,10 +248,17 @@ SkyBlocks.game = function() {
 
   self.attr( 'lines', 0 );
   self.attr( 'score', 0 );
-  self.attr( 'level', 1 );
+  self.attr( 'level', 0 );
   self.attr( 'field', new SkyBlocks.field() );
   self.attr( 'nextFigure', new SkyBlocks.figure.random() );
   self.attr( 'piece', self.newPiece() );
+
+  self._levelChanged = function() {
+    self.field().gravity( self.level() );
+  }
+
+  // start at level 1
+  self.level( 1 );
 
   self.over = function() {
     return self.piece().collides();

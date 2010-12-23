@@ -29,6 +29,19 @@ describe( 'Game', function() {
     });
   });
 
+  describe( 'level effect on field gravity', function() {
+    it( 'is initially 1 block per second', function() {
+      expect( game.field().gravity() ).toEqual( 1.0 );
+    });
+
+    it( 'is equal to the level', function() {
+      game.level( 2 );
+      expect( game.field().gravity() ).toEqual( 2.0 );
+      game.level( 5 );
+      expect( game.field().gravity() ).toEqual( 5.0 );
+    });
+  });
+
   describe( 'piece lifetime', function() {
     it( 'does not change if not grounded', function() {
       var initialPiece = game.piece();
