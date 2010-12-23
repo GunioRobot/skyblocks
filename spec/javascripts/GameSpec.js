@@ -90,15 +90,9 @@ describe( 'Game', function() {
       var initialY = game.piece().y();
       game.piece().drop();
       var newY = game.piece().y();
-      game.update( 0 );
       var blocksDropped = newY - initialY;
       var expectedScore = 100 + Math.floor( blocksDropped / 2 ) * game.level();
       expect( game.score() ).toEqual( expectedScore );
-    });
-
-    it( 'does not increase the score if not dropped', function() {
-      game.update( 0 );
-      expect( game.score() ).toEqual( 100 );
     });
   });
 
@@ -138,6 +132,22 @@ describe( 'Game', function() {
       game.update( 0 );
       expect( field.clearLines ).toHaveBeenCalled();
       expect( game.score() ).toEqual( 550 );
+    });
+  });
+
+  describe( 'lines', function() {
+    it( 'is initially 0', function() {
+      expect( game.lines() ).toEqual( 0 );
+    });
+
+    it( 'increases the number of lines when lines are cleared', function() {
+      var field = game.field();
+      game.lines( 5 );
+      spyOn( field, 'clearLines' ).andReturn( 4 );
+      game.piece().drop();
+      game.update( 0 );
+      expect( field.clearLines ).toHaveBeenCalled();
+      expect( game.lines() ).toEqual( 9 );
     });
   });
 

@@ -318,6 +318,21 @@ describe( 'Piece', function() {
       piece.drop();
       expect( piece.y() ).toEqual( expectedY );
     });
+
+    it( 'fires the dropped event with the number of lines dropped', function() {
+      var dropped = false; 
+      var linesDropped = 0;
+      piece.dropped( function( lines ) { 
+        dropped = true; 
+        linesDropped = lines; 
+      });
+      var initialY = piece.y();
+      piece.drop();
+      var newY = piece.y();
+      var expectedLines = newY - initialY;
+      expect( dropped ).toBeTruthy();
+      expect( linesDropped ).toEqual( expectedLines );
+    });
   });
 
   describe( 'grounded', function() {

@@ -21,6 +21,7 @@ Object.prototype.attr = function( name, initialValue ) {
     var changedCallback = this[ '_' + name + 'Changed' ];
     if( changedCallback )
       changedCallback();
+    return val;
   }
 }
 
@@ -142,6 +143,7 @@ SkyBlocks.piece = function( figure, field ) {
   self.attr( 'width', figure.width() );
   self.attr( 'height', figure.height() );
   self.attr( 'rotationIndex', 0 );
+  self.attr( 'dropped', null );
 
   self.grid = function() { 
     return self.figure().grids()[ self.rotationIndex() ]; 
@@ -161,9 +163,12 @@ SkyBlocks.piece = function( figure, field ) {
   }
 
   self.drop = function() {
+    var initialY = self.y();
     while( !self.collides() )
       self.y( self.y() + 1 );
-    self.y( self.y() - 1 );
+    var newY = self.y( self.y() - 1 );
+    if( self.dropped() )
+      self.dropped()( newY - initialY );
   }
 
   self.embed = function() {
@@ -231,32 +236,36 @@ SkyBlocks.piece.transformations.down = [ 'y', 1 ]
 SkyBlocks.game = function() {
   var self = this;
 
+  self.newPiece = function() {
+    var piece = new SkyBlocks.piece( self.nextFigure(), self.field() );
+    // increase the score when a piece is dropped
+    piece.dropped( function( linesDropped ) {
+      self.score( self.score() + Math.floor( linesDropped / 2 ) * self.level() );
+    });
+    self.nextFigure( SkyBlocks.figure.random() );
+    return piece;
+  }
+
+  self.attr( 'lines', 0 );
   self.attr( 'score', 0 );
   self.attr( 'level', 1 );
   self.attr( 'field', new SkyBlocks.field() );
   self.attr( 'nextFigure', new SkyBlocks.figure.random() );
-  self.attr( 'piece', new SkyBlocks.piece( SkyBlocks.figure.random(), self.field() ) );
+  self.attr( 'piece', self.newPiece() );
 
   self.over = function() {
     return self.piece().collides();
   }
 
-  var lastPieceY = 0;
   self.update = function( elapsed ) {
     self.piece().update( elapsed );
     if( self.piece().grounded() ) {
-      // increase score for quick drop
-      var linesDropped = self.piece().y() - lastPieceY;
-      self.score( self.score() + Math.floor( linesDropped / 2 ) * self.level() );
-      // embed current piece and create next piece
       self.piece().embed();
-      self.piece( new SkyBlocks.piece( self.nextFigure(), self.field() ) );
-      self.nextFigure( SkyBlocks.figure.random() );
-      // clear lines
-      var lines = self.field().clearLines();
-      self.score( self.score() + SkyBlocks.linePoints[lines] * self.level() );
+      self.piece( self.newPiece() );
+      var linesCleared = self.field().clearLines();
+      self.lines( self.lines() + linesCleared );
+      self.score( self.score() + SkyBlocks.linePoints[linesCleared] * self.level() );
     }
-    lastPieceY = self.piece().y();
   }
 }
 
