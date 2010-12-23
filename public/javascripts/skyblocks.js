@@ -265,6 +265,7 @@ SkyBlocks.game = function() {
       var linesCleared = self.field().clearLines();
       self.lines( self.lines() + linesCleared );
       self.score( self.score() + SkyBlocks.linePoints[linesCleared] * self.level() );
+      self.level( Math.floor( self.lines() / 10 ) + 1 );
     }
   }
 }

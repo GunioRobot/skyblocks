@@ -14,6 +14,19 @@ describe( 'Game', function() {
     it( 'is initially level 1', function() {
       expect( game.level() ).toEqual( 1 );
     });
+
+    it( 'increases after each 10 lines are cleared', function() {
+      var field = game.field();
+      spyOn( field, 'clearLines' ).andReturn( 10 );
+      game.piece().drop();
+      game.update( 0 );
+      expect( field.clearLines ).toHaveBeenCalled();
+      expect( game.level() ).toEqual( 2 );
+      game.piece().drop();
+      game.update( 0 );
+      expect( field.clearLines ).toHaveBeenCalled();
+      expect( game.level() ).toEqual( 3 );
+    });
   });
 
   describe( 'piece lifetime', function() {
