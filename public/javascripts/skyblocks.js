@@ -1,280 +1,175 @@
-/*
- * SkyBlocks
- * A browser based tetris clone
- *
- * Written by Lee Muro
- * https://github.com/leemuro/skyblocks
- */
+//  SkyBlocks
+//     A browser based tetris clone 
+//     https://github.com/leemuro/skyblocks
 
 var SkyBlocks = {};
 
-/* 
- * Object attribute helper
- * dynamically add an attribute get/set method to an object
- */
-Object.prototype.attr = function( name, initialValue ) {
-  this[ '_' + name ] = initialValue;
-  this[ name ] = function( val ) { 
-    if( typeof val == 'undefined' )
-      return this[ '_' + name ];
-    this[ '_' + name ] = val;
-    var changedCallback = this[ '_' + name + 'Changed' ];
-    if( changedCallback )
-      changedCallback();
-    return val;
+//  SkyBlocks.blocks
+//     returns an empty array of blocks
+
+SkyBlocks.blocks = function( width, height ) {
+  var blocks = [];
+  for( var x = 0; x < width; x++ ) {
+    blocks[ x ] = [];
+    for( var y = 0; y < height; y++ )
+      blocks[ x ][ y ] = 0;
   }
+  return blocks;
 }
 
-/*
- * SkyBlocks.grid
- * a grid of blocks
- */
-SkyBlocks.grid = function( width, height, blockValue, hex ) {
-  var self = this;
+//  SkyBlocks.field
+//     main gameplay area where pieces fall and collect
 
-  self.attr( 'width', width );
-  self.attr( 'height', height );
-  self.attr( 'blocks', new Array( self.width() ) );
-
-  // convert the hex code into an array using binary math
-  var n = 0, size = ( self.width() * self.height() );
-  for( var y = 0; y < self.height(); y++ ) {
-    for( var x = 0; x < self.width(); x++ ) {
-      if( !self.blocks()[x] ) self.blocks()[x] = new Array( self.height() );
-      var f = Math.pow( 2, size - 1 - n );
-      self.blocks()[x][y] = ( ( hex & f ) / f ) > 0 ? blockValue : 0;
-      n++;
-    }
-  }
-}
-
-/*
- * SkyBlocks.field
- * a grid representing the main game area
- */
 SkyBlocks.field = function() {
-  var self = this;
+  this.width = 10;
+  this.height = 20;
+  this.blocks = new SkyBlocks.blocks( this.width, this.height );
 
-  self.attr( 'width', 10 );
-  self.attr( 'height', 16 );
-  self.attr( 'grid', new SkyBlocks.grid( self.width(), self.height(), 0x0 ) );
-  self.attr( 'gravity', 0.0 );
-
-  self.outOfBounds = function( x, y ) {
-    return x < 0 || x >= self.width() || y < 0 || y >= self.height();
+  this.outOfBounds = function( x, y ) {
+    return x < 0 || x >= this.width || y < 0 || y >= this.height;
   }
+};
 
-  self.clearLines = function() {
-    var newGrid = new SkyBlocks.grid( self.width(), self.height(), 0x0 );
-    for( var y = newGridY = self.height() - 1, lines = 0; y >= 0; y-- ) {
-      if( self.lineCompleted( y ) )
-        lines++;
-      else {
-        for( var x = 0; x < self.width(); x++ )
-          newGrid.blocks()[x][newGridY] = self.grid().blocks()[x][y];
-        newGridY--;
+//  SkyBlocks.figure
+//     defines a shape of 4 blocks in different orientations
+
+SkyBlocks.figure = function( width, height, orientations ) {
+  this.width = width;
+  this.height = height;
+
+  this.hexToArray = function( hex ) {
+    var orientation = new SkyBlocks.blocks( width, height );
+    var n = 0;
+    for( var y = 0; y < height; y++ ) {
+      for( var x = 0; x < width; x++ ) {
+        var f = Math.pow( 2, ( width * height ) - 1 - n );
+        orientation[ x ][ y ] = ( hex & f ) / f;
+        n++;
       }
     }
-    self.grid( newGrid );
-    return lines;
+    return orientation;
   }
 
-  self.lineCompleted = function( y ) {
-    for( var x = 0; x < self.width(); x++ ) {
-      if( self.grid().blocks()[x][y] == 0 )
-        return false;
+  this.orientations = [];
+  for( var i = 0; i < orientations.length; i++ )
+    this.orientations[ i ] = this.hexToArray( orientations[ i ] );
+}
+
+//  SkyBlocks.figures
+//     store all the figures in an array
+
+SkyBlocks.figures = [
+  new SkyBlocks.figure(3, 3, [ 0x3C, 0x192, 0x78, 0x93 ]), // L
+  new SkyBlocks.figure(3, 3, [ 0x138, 0xD2, 0x39, 0x96 ]), // J
+  new SkyBlocks.figure(3, 3, [ 0xB8, 0x9A, 0x3A, 0xB2 ]), // T
+  new SkyBlocks.figure(4, 4, [ 0xF00, 0x4444 ]), // I
+  new SkyBlocks.figure(3, 3, [ 0x1E, 0x99 ]), // S
+  new SkyBlocks.figure(3, 3, [ 0x33, 0x5A ]), // Z
+  new SkyBlocks.figure(2, 2, [ 0xF ]) // O
+];
+
+//  SkyBlocks.next
+//     stores the next figure that is about to enter the field
+
+SkyBlocks.next = function() {
+  this.figure = SkyBlocks.figures[ 0 ];
+
+  this.update = function( state ) {
+    if( state.pieceLanded ) {
+      var rand = Math.floor( Math.random() * SkyBlocks.figures.length );
+      this.figure = SkyBlocks.figures[ rand ];
     }
-    return true;
   }
-
 }
 
-/* 
- * SkyBlocks.figure
- * a figure represented in multiple rotations by grids
- */
-SkyBlocks.figure = function( width, height, rotations ) {
-  var self = this;
+//  SkyBlocks.piece
+//     a positioned figure in a field that handles collision detection
 
-  self.attr( 'value', SkyBlocks.figures.length + 1 );
-  self.attr( 'width', width );
-  self.attr( 'height', height );
-  self.attr( 'rotations', rotations );
-  self.attr( 'grids', [] );
-
-  // convert the hex rotations into actual grids
-  for( var i = 0; i < self.rotations().length; i++ ) {
-    var grid = new SkyBlocks.grid( self.width(), self.height(), self.value(), self.rotations()[i] );
-    self.grids()[i] = grid;
-  }
-
-  SkyBlocks.figures.push( self );
-}
-
-/* 
- * define all the standard figures
- * l, j, t, i, s, z, o
- */
-SkyBlocks.figures = [];
-SkyBlocks.lFigure = new SkyBlocks.figure( 3, 3, [ 0x3C, 0x192, 0x78, 0x93 ] );
-SkyBlocks.jFigure = new SkyBlocks.figure( 3, 3, [ 0x138, 0xD2, 0x39, 0x96 ] ); 
-SkyBlocks.tFigure = new SkyBlocks.figure( 3, 3, [ 0xB8, 0x9A, 0x3A, 0xB2 ] );
-SkyBlocks.iFigure = new SkyBlocks.figure( 4, 4, [ 0xF00, 0x4444 ] ); 
-SkyBlocks.sFigure = new SkyBlocks.figure( 3, 3, [ 0x1E, 0x99 ] );
-SkyBlocks.zFigure = new SkyBlocks.figure( 3, 3, [ 0x33, 0x5A ] );
-SkyBlocks.oFigure = new SkyBlocks.figure( 2, 2, [ 0xF ] );
-
-// TODO: Test this randomness
-SkyBlocks.figure.random = function() {
-  return SkyBlocks.figures[ Math.floor( Math.random() * SkyBlocks.figures.length ) ];
-}
-
-/* 
- * SkyBlocks.piece
- * a figure that can be manipulated and interacts with a field
- */
 SkyBlocks.piece = function( figure, field ) {
-  var self = this;
+  this.blocks = figure.orientations[ 0 ];
+  this.x = Math.floor( ( field.width - figure.width ) / 2 );
+  this.y = 0;
 
-  self.attr( 'figure', figure );
-  self.attr( 'field', field );
-  self.attr( 'x', Math.floor( ( field.width() - figure.width() ) / 2 ) );
-  self.attr( 'y', 0 );
-  self.attr( 'width', figure.width() );
-  self.attr( 'height', figure.height() );
-  self.attr( 'rotationIndex', 0 );
-  self.attr( 'dropped', null );
-
-  self.grid = function() { 
-    return self.figure().grids()[ self.rotationIndex() ]; 
-  }
-
-  self._rotationIndexChanged = function() {
-    if( self.rotationIndex() == self.figure().grids().length )
-      self.rotationIndex( 0 );
-    else if( self.rotationIndex() < 0 )
-      self.rotationIndex( self.figure().grids().length - 1 );
-  }
-
-  self.transform = function( transformation ) {
-    self[ transformation[0] ]( self[ transformation[0] ]() + transformation[1] );
-    if( self.collides() )
-      self[ transformation[0] ]( self[ transformation[0] ]() - transformation[1] );
-  }
-
-  self.drop = function() {
-    var initialY = self.y();
-    while( !self.collides() )
-      self.y( self.y() + 1 );
-    var newY = self.y( self.y() - 1 );
-    if( self.dropped() )
-      self.dropped()( newY - initialY );
-  }
-
-  self.embed = function() {
-    for( var x = 0; x < self.width(); x++ ) {
-      for( var y = 0; y < self.height(); y++ ) {
-        var fieldX = self.x() + x;
-        var fieldY = self.y() + y;
-        if( self.field().outOfBounds( fieldX, fieldY ) ) 
+  this.collides = function() {
+    for( var x = 0; x < figure.width; x++ ) {
+      for( var y = 0; y < figure.height; y++ ) {
+        var fx = this.x + x;
+        var fy = this.y + y;
+        if( this.blocks[ x ][ y ] == 0 )
           continue;
-        var block = self.grid().blocks()[x][y];
-        if( block > 0 )
-          field.grid().blocks()[fieldX][fieldY] = block;
-      }
-    }
-  }
-
-  self.collides = function() {
-    for( var x = 0; x < self.width(); x++ ) {
-      for( var y = 0; y < self.height(); y++ ) {
-        var fieldX = self.x() + x;
-        var fieldY = self.y() + y;
-        if( self.grid().blocks()[x][y] == 0 )
-          continue;
-        if( self.field().outOfBounds( fieldX, fieldY ) )
-          return true;
-        if( field.grid().blocks()[fieldX][fieldY] > 0 )
+        if( field.outOfBounds( fx, fy ) || field.blocks[ fx ][ fy ] > 0 )
           return true;
       }
     }
     return false;
   }
+}
 
-  self.grounded = function() {
-    self.y( self.y() + 1 );
-    var grounded = self.collides();
-    self.y( self.y() - 1 );
-    return grounded;
+//  SkyBlocks.clearer
+//     clears lines in the field
+
+SkyBlocks.clearer = function( field ) {
+  this.update = function( e ) {
+    if( !e.pieceLanded )
+      return { linesCleared: 0 }
+    this.clear();
+    return { linesCleared: this.linesCleared }
   }
 
-  self.update = function( elapsed ) {
-    // apply field gravity
-    var initialY = self.y();
-    self.y( self.y() + ( elapsed / 1000.0 ) * field.gravity() ); 
-    if( self.collides() ) {
-      self.y( initialY );
-      self.drop();
-    }
+  this.clear = function() {
+    this.blocks = new SkyBlocks.blocks( field.width, field.height );
+    this.linesCleared = 0;
+    for( var y = field.height - 1; y >= 0; y-- )
+      this.clearLine( y );
+    field.blocks = this.blocks;
+  }
+
+  this.clearLine = function( y ) {
+    if( this.lineCompleted( y ) )
+      this.linesCleared++;
+    else this.copyLine( y );
+  }
+
+  this.copyLine = function( y ) {
+    for( var x = 0; x < field.width; x++ )
+      this.blocks[ x ][ y + this.linesCleared ] = field.blocks[ x ][ y ];
+  }
+
+  this.lineCompleted = function( y ) {
+    for( var x = 0; x < field.width; x++ )
+      if( field.blocks[ x ][ y ] == 0 ) 
+        return false;
+    return true;
   }
 }
 
-/*
- * Piece transformations
- */
-SkyBlocks.piece.transformations = {}
-SkyBlocks.piece.transformations.clockwise = [ 'rotationIndex', -1 ];
-SkyBlocks.piece.transformations.counterClockwise = [ 'rotationIndex', 1 ];
-SkyBlocks.piece.transformations.left = [ 'x', -1 ];
-SkyBlocks.piece.transformations.right = [ 'x', 1 ];
-SkyBlocks.piece.transformations.down = [ 'y', 1 ]
+//  SkyBlocks.controls
+//     constants used only to identify the individual game controls
 
-/*
- * SkyBlocks.game
- * coordinates the actual gameplay
- */
-SkyBlocks.game = function() {
-  var self = this;
+SkyBlocks.controls = {}
+SkyBlocks.controls.left = 0;
+SkyBlocks.controls.right = 1;
+SkyBlocks.controls.rotateClockwise = 2;
+SkyBlocks.controls.rotateCounterClockwise = 3;
+SkyBlocks.controls.speedUp = 4;
+SkyBlocks.controls.drop = 5;
 
-  self.newPiece = function() {
-    var piece = new SkyBlocks.piece( self.nextFigure(), self.field() );
-    // increase the score when a piece is dropped
-    piece.dropped( function( linesDropped ) {
-      self.score( self.score() + Math.floor( linesDropped / 2 ) * self.level() );
-    });
-    self.nextFigure( SkyBlocks.figure.random() );
-    return piece;
-  }
+//  SkyBlocks.controller
+//     stores the state of something that the user controls the game with
 
-  self.attr( 'lines', 0 );
-  self.attr( 'score', 0 );
-  self.attr( 'level', 0 );
-  self.attr( 'field', new SkyBlocks.field() );
-  self.attr( 'nextFigure', new SkyBlocks.figure.random() );
-  self.attr( 'piece', self.newPiece() );
-
-  self._levelChanged = function() {
-    self.field().gravity( self.level() );
-  }
-
-  // start at level 1
-  self.level( 1 );
-
-  self.over = function() {
-    return self.piece().collides();
-  }
-
-  self.update = function( elapsed ) {
-    self.piece().update( elapsed );
-    if( self.piece().grounded() ) {
-      self.piece().embed();
-      self.piece( self.newPiece() );
-      var linesCleared = self.field().clearLines();
-      self.lines( self.lines() + linesCleared );
-      self.score( self.score() + SkyBlocks.linePoints[linesCleared] * self.level() );
-      self.level( Math.floor( self.lines() / 10 ) + 1 );
-    }
-  }
+SkyBlocks.controller = function() {
+  var me = this;
+  var downs = {}; 
+  this.sendDown = function( control ) { downs[ control ] = true; }
+  this.sendUp = function( control ) { downs[ control ] = false; }
+  this.isDown = function( control ) { return downs[ control ]; }
 }
 
-SkyBlocks.linePoints = [ 0, 10, 25, 60, 150 ];
+//  SkyBlocks.keyboard
+//     sets up the user's keyboard to be uses as the game controller
+
+SkyBlocks.keyboard = function() {
+  $( window ).keydown( function( e ) { me.sendDown( e.keyCode ); } );
+  $( window ).keyup( function( e ) { me.sendUp( e.keyCode ); } );
+}
+SkyBlocks.keyboard.prototype = new SkyBlocks.controller();
