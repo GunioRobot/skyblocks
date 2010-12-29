@@ -158,7 +158,6 @@ SkyBlocks.controls.drop = 5;
 //     stores the state of something that the user controls the game with
 
 SkyBlocks.controller = function() {
-  var me = this;
   var downs = {}; 
   this.sendDown = function( control ) { downs[ control ] = true; }
   this.sendUp = function( control ) { downs[ control ] = false; }
@@ -169,6 +168,7 @@ SkyBlocks.controller = function() {
 //     sets up the user's keyboard to be uses as the game controller
 
 SkyBlocks.keyboard = function() {
+  var me = this;
   $( window ).keydown( function( e ) { me.sendDown( e.keyCode ); } );
   $( window ).keyup( function( e ) { me.sendUp( e.keyCode ); } );
 }
