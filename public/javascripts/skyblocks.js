@@ -105,6 +105,45 @@ SkyBlocks.piece = function( figure, field ) {
   }
 }
 
+//  SkyBlocks.left
+//     handles moving the piece to the left within the field
+
+SkyBlocks.left = function() {
+  this.update = function( state ) {
+    if( state.controller.isDown( SkyBlocks.controls.left ) ) {
+      state.piece.x -= 1;
+      if( state.piece.collides() )
+        state.piece.x += 1;
+    }
+  }
+}
+
+//  SkyBlocks.right
+//     handles moving the piece to the right within the field
+
+SkyBlocks.right = function() {
+  this.update = function( state ) {
+    if( state.controller.isDown( SkyBlocks.controls.right ) ) {
+      state.piece.x += 1;
+      if( state.piece.collides() )
+        state.piece.x -= 1;
+    }
+  }
+}
+
+//  SkyBlocks.down
+//     handles moving the piece to the down within the field
+
+SkyBlocks.down = function() {
+  this.update = function( state ) {
+    if( state.controller.isDown( SkyBlocks.controls.down ) ) {
+      state.piece.y += 1;
+      if( state.piece.collides() )
+        state.piece.y -= 1;
+    }
+  }
+}
+
 //  SkyBlocks.clearer
 //     clears lines in the field
 
@@ -149,9 +188,9 @@ SkyBlocks.clearer = function( field ) {
 SkyBlocks.controls = {}
 SkyBlocks.controls.left = 0;
 SkyBlocks.controls.right = 1;
-SkyBlocks.controls.rotateClockwise = 2;
-SkyBlocks.controls.rotateCounterClockwise = 3;
-SkyBlocks.controls.speedUp = 4;
+SkyBlocks.controls.down = 2;
+SkyBlocks.controls.rotateClockwise = 3;
+SkyBlocks.controls.rotateCounterClockwise = 4;
 SkyBlocks.controls.drop = 5;
 
 //  SkyBlocks.controller
