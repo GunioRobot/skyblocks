@@ -148,8 +148,8 @@ SkyBlocks.down = function() {
 //     clears lines in the field
 
 SkyBlocks.clearer = function( field ) {
-  this.update = function( e ) {
-    if( !e.pieceLanded )
+  this.update = function( state ) {
+    if( !state.pieceLanded )
       return { linesCleared: 0 }
     this.clear();
     return { linesCleared: this.linesCleared }
