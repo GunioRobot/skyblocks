@@ -120,6 +120,24 @@ SkyBlocks.gravity = function( rate ) {
   }
 }
 
+//  SkyBlocks.embedder
+//     embeds pieces into the field when they land
+
+SkyBlocks.embedder = function() {
+  this.update = function( state ) {
+    if( !state.pieceLanded )
+      return;
+    for( var x = 0; x < state.piece.figure.width; x++ ) {
+      for( var y = 0; y < state.piece.figure.height; y++ ) {
+        var fx = Math.floor( state.piece.x + x );
+        var fy = Math.floor( state.piece.y + y );
+        var pieceBlock = state.piece.figure.orientations[ state.piece.orientation ][ x ][ y ];
+        state.field.blocks[ fx ][ fy ] = pieceBlock;
+      }
+    }
+  }
+}
+
 //  SkyBlocks.left
 //     handles moving the piece to the left within the field
 
