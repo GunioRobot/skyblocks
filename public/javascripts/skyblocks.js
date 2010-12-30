@@ -231,6 +231,21 @@ SkyBlocks.clockwise.prototype = new SkyBlocks.rotation( -1, SkyBlocks.controls.c
 SkyBlocks.counterClockwise = function() {}
 SkyBlocks.counterClockwise.prototype = new SkyBlocks.rotation( 1, SkyBlocks.controls.counterClockwise );
 
+//  SkyBlocks.dropper
+//     handles dropping pieces until they collide
+
+SkyBlocks.dropper = function() {
+  this.update = function( state ) {
+    if( state.controller.isDown( SkyBlocks.controls.drop ) ) {
+      while( !state.piece.collides() )
+        state.piece.y++;
+      state.piece.y--;
+      state.pieceLanded = true;
+    }
+    return state;
+  }
+}
+
 //  SkyBlocks.clearer
 //     clears lines in the field
 

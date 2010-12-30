@@ -4,12 +4,11 @@ Concerns
 -figure
 -piece
 -next
-saved
-gravity
---move
---rotate
+-gravity
+-move
+-rotate
 drop
-embed
+-embed
 -clear
 score
 lines
