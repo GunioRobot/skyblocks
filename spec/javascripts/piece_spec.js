@@ -23,16 +23,6 @@ describe( 'piece', function() {
     });
   });
 
-  describe( 'blocks', function() {
-
-    it( 'has the same blocks as the figures first orientation', function() {
-      var orientation = figure.orientations[ 0 ];
-      for( var x = 0; x < figure.width; x++ )
-        for( var y = 0; y< figure.height; y++ )
-          expect( piece.blocks()[ x ][ y ] ).toEqual( orientation[ x ][ y ] );
-    });
-  });
-
   describe( 'collision', function() {
 
     beforeEach( function() {

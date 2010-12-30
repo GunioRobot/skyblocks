@@ -91,16 +91,12 @@ SkyBlocks.piece = function( figure, field ) {
   this.orientation = 0;
   this.figure = figure;
 
-  this.blocks = function() {
-    return figure.orientations[ this.orientation ];
-  }
-
   this.collides = function() {
     for( var x = 0; x < figure.width; x++ ) {
       for( var y = 0; y < figure.height; y++ ) {
         var fx = this.x + x;
         var fy = this.y + y;
-        if( this.blocks()[ x ][ y ] == 0 )
+        if( this.figure.orientations[ this.orientation ][ x ][ y ] == 0 )
           continue;
         if( field.outOfBounds( fx, fy ) || field.blocks[ fx ][ fy ] > 0 )
           return true;
