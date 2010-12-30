@@ -16,7 +16,7 @@ describe( 'right', function() {
       controller.sendDown( SkyBlocks.controls.right );
     });
 
-    it( 'moves right if the right controls is down', function() {
+    it( 'moves right by one block', function() {
       right.update( state );
       expect( piece.x ).toEqual( initialX + 1 );
     });
@@ -31,7 +31,7 @@ describe( 'right', function() {
 
   describe( 'when right control is not down', function() {
 
-    it( 'does not move if right control is not down', function() {
+    it( 'does not move the piece', function() {
       right.update( state );
       expect( piece.x ).toEqual( initialX );
     });

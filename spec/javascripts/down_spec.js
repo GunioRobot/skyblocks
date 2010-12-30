@@ -16,7 +16,7 @@ describe( 'down', function() {
       controller.sendDown( SkyBlocks.controls.down );
     });
 
-    it( 'moves down if the down controls is down', function() {
+    it( 'moves down by 1 block', function() {
       down.update( state );
       expect( piece.y ).toEqual( initialY + 1 );
     });
@@ -31,7 +31,7 @@ describe( 'down', function() {
 
   describe( 'when down control is not down', function() {
 
-    it( 'does not move if down control is not down', function() {
+    it( 'does not move the piece', function() {
       down.update( state );
       expect( piece.y ).toEqual( initialY );
     });
