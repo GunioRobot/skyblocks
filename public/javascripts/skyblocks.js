@@ -4,6 +4,37 @@
 
 var SkyBlocks = {};
 
+//  SkyBlocks.controls
+//     constants used only to identify the individual game controls
+
+SkyBlocks.controls = {}
+SkyBlocks.controls.left = 0;
+SkyBlocks.controls.right = 1;
+SkyBlocks.controls.down = 2;
+SkyBlocks.controls.clockwise = 3;
+SkyBlocks.controls.counterClockwise = 4;
+SkyBlocks.controls.drop = 5;
+
+//  SkyBlocks.controller
+//     stores the state of something that the user controls the game with
+
+SkyBlocks.controller = function() {
+  var downs = {}; 
+  this.sendDown = function( control ) { downs[ control ] = true; }
+  this.sendUp = function( control ) { downs[ control ] = false; }
+  this.isDown = function( control ) { return downs[ control ]; }
+}
+
+//  SkyBlocks.keyboard
+//     sets up the user's keyboard to be uses as the game controller
+
+SkyBlocks.keyboard = function() {
+  var me = this;
+  $( window ).keydown( function( e ) { me.sendDown( e.keyCode ); } );
+  $( window ).keyup( function( e ) { me.sendUp( e.keyCode ); } );
+}
+SkyBlocks.keyboard.prototype = new SkyBlocks.controller();
+
 //  SkyBlocks.blocks
 //     returns an empty array of blocks
 
@@ -138,44 +169,52 @@ SkyBlocks.embedder = function() {
   }
 }
 
-//  SkyBlocks.left
-//     handles moving the piece to the left within the field
+//  SkyBlocks.movement
+//     base class to handle movement of the piece within the field
 
-SkyBlocks.left = function() {
+SkyBlocks.movement = function( attr, direction, control ) {
   this.update = function( state ) {
-    if( state.controller.isDown( SkyBlocks.controls.left ) ) {
-      var initialX = state.piece.x;
-      state.piece.x -= 1;
+    if( state.controller.isDown( control ) ) {
+      var initial = state.piece[ attr ];
+      state.piece[ attr ] += direction;
       if( state.piece.collides() )
-        state.piece.x = initialX;
+        state.piece[ attr ] = initial;
     }
   }
 }
+//  SkyBlocks.left
+//     handles moving the piece to the left within the field
+
+SkyBlocks.left = function() {}
+SkyBlocks.left.prototype = new SkyBlocks.movement( 'x', -1, SkyBlocks.controls.left );
+
 
 //  SkyBlocks.right
 //     handles moving the piece to the right within the field
 
-SkyBlocks.right = function() {
-  this.update = function( state ) {
-    if( state.controller.isDown( SkyBlocks.controls.right ) ) {
-      var initialX = state.piece.x;
-      state.piece.x += 1;
-      if( state.piece.collides() )
-        state.piece.x = initialX;
-    }
-  }
-}
+SkyBlocks.right = function() {}
+SkyBlocks.right.prototype = new SkyBlocks.movement( 'x', 1, SkyBlocks.controls.right );
 
 //  SkyBlocks.down
 //     handles moving the piece to the down within the field
 
-SkyBlocks.down = function() {
+SkyBlocks.down = function() {}
+SkyBlocks.down.prototype = new SkyBlocks.movement( 'y', 1, SkyBlocks.controls.down );
+
+//  SkyBlocks.rotation
+//     base class to handle rotation of the piece within the field
+
+SkyBlocks.rotation = function( direction, control ) {
   this.update = function( state ) {
-    if( state.controller.isDown( SkyBlocks.controls.down ) ) {
-      var initialY = state.piece.y;
-      state.piece.y += 1;
+    if( state.controller.isDown( control ) ) {
+      var initialOrientation = state.piece.orientation;
+      state.piece.orientation += direction;
+      if( state.piece.orientation < 0 )
+        state.piece.orientation = state.piece.figure.orientations.length - 1;
+      else if( state.piece.orientation == state.piece.figure.orientations.length )
+        state.piece.orientation = 0;
       if( state.piece.collides() )
-        state.piece.y = initialY;
+        state.piece.orientation = initialOrientation;
     }
   }
 }
@@ -183,34 +222,14 @@ SkyBlocks.down = function() {
 //  SkyBlocks.clockwise
 //     handles rotating the piece clockwise within the field
 
-SkyBlocks.clockwise = function() {
-  this.update = function( state ) {
-    if( state.controller.isDown( SkyBlocks.controls.clockwise ) ) {
-      var initialOrientation = state.piece.orientation;
-      state.piece.orientation -= 1;
-      if( state.piece.orientation < 0 )
-        state.piece.orientation = state.piece.figure.orientations.length - 1;
-      if( state.piece.collides() )
-        state.piece.orientation = initialOrientation;
-    }
-  }
-}
+SkyBlocks.clockwise = function() {}
+SkyBlocks.clockwise.prototype = new SkyBlocks.rotation( -1, SkyBlocks.controls.clockwise );
 
 //  SkyBlocks.counterClockwise
 //     handles rotating the piece counter clockwise within the field
 
-SkyBlocks.counterClockwise = function() {
-  this.update = function( state ) {
-    if( state.controller.isDown( SkyBlocks.controls.counterClockwise ) ) {
-      var initialOrientation = state.piece.orientation;
-      state.piece.orientation += 1;
-      if( state.piece.orientation == state.piece.figure.orientations.length )
-        state.piece.orientation = 0;
-      if( state.piece.collides() )
-        state.piece.orientation = initialOrientation;
-    }
-  }
-}
+SkyBlocks.counterClockwise = function() {}
+SkyBlocks.counterClockwise.prototype = new SkyBlocks.rotation( 1, SkyBlocks.controls.counterClockwise );
 
 //  SkyBlocks.clearer
 //     clears lines in the field
@@ -253,33 +272,3 @@ SkyBlocks.clearer = function() {
   }
 }
 
-//  SkyBlocks.controls
-//     constants used only to identify the individual game controls
-
-SkyBlocks.controls = {}
-SkyBlocks.controls.left = 0;
-SkyBlocks.controls.right = 1;
-SkyBlocks.controls.down = 2;
-SkyBlocks.controls.clockwise = 3;
-SkyBlocks.controls.counterClockwise = 4;
-SkyBlocks.controls.drop = 5;
-
-//  SkyBlocks.controller
-//     stores the state of something that the user controls the game with
-
-SkyBlocks.controller = function() {
-  var downs = {}; 
-  this.sendDown = function( control ) { downs[ control ] = true; }
-  this.sendUp = function( control ) { downs[ control ] = false; }
-  this.isDown = function( control ) { return downs[ control ]; }
-}
-
-//  SkyBlocks.keyboard
-//     sets up the user's keyboard to be uses as the game controller
-
-SkyBlocks.keyboard = function() {
-  var me = this;
-  $( window ).keydown( function( e ) { me.sendDown( e.keyCode ); } );
-  $( window ).keyup( function( e ) { me.sendUp( e.keyCode ); } );
-}
-SkyBlocks.keyboard.prototype = new SkyBlocks.controller();
