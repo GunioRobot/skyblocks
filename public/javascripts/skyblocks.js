@@ -17,19 +17,6 @@ SkyBlocks.blocks = function( width, height ) {
   return blocks;
 }
 
-//  SkyBlocks.field
-//     main gameplay area where pieces fall and collect
-
-SkyBlocks.field = function() {
-  this.width = 10;
-  this.height = 20;
-  this.blocks = new SkyBlocks.blocks( this.width, this.height );
-
-  this.outOfBounds = function( x, y ) {
-    return x < 0 || x >= this.width || y < 0 || y >= this.height;
-  }
-};
-
 //  SkyBlocks.figure
 //     defines a shape of 4 blocks in different orientations
 
@@ -59,7 +46,7 @@ SkyBlocks.figure = function( width, height, orientations ) {
 //     store all the figures in an array
 
 SkyBlocks.figures = [
-  new SkyBlocks.figure(3, 3, [ 0x3C, 0x192, 0x78, 0x93 ]), // L
+  new SkyBlocks.figure(3, 3, [ 0x78, 0x192, 0x3C, 0x93 ]), // L
   new SkyBlocks.figure(3, 3, [ 0x138, 0xD2, 0x39, 0x96 ]), // J
   new SkyBlocks.figure(3, 3, [ 0xB8, 0x9A, 0x3A, 0xB2 ]), // T
   new SkyBlocks.figure(4, 4, [ 0xF00, 0x4444 ]), // I
@@ -82,6 +69,19 @@ SkyBlocks.next = function() {
   }
 }
 
+//  SkyBlocks.field
+//     main gameplay area where pieces fall and collect
+
+SkyBlocks.field = function() {
+  this.width = 10;
+  this.height = 20;
+  this.blocks = new SkyBlocks.blocks( this.width, this.height );
+
+  this.outOfBounds = function( x, y ) {
+    return x < 0 || x >= this.width || y < 0 || y >= this.height;
+  }
+};
+
 //  SkyBlocks.piece
 //     a positioned figure in a field that handles collision detection
 
@@ -103,6 +103,20 @@ SkyBlocks.piece = function( figure, field ) {
       }
     }
     return false;
+  }
+}
+
+//  SkyBlocks.gravity
+//     moves the piece down in the field at a given rate
+
+SkyBlocks.gravity = function( rate ) {
+  this.update = function( state ) {
+    state.piece.y += rate * ( state.elapsed / 1000.0 );
+    while( state.piece.collides() ) {
+      state.pieceLanded = true;
+      state.piece.y--;
+    }
+    return state;
   }
 }
 

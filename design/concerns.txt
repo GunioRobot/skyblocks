@@ -6,12 +6,12 @@ Concerns
 -next
 saved
 gravity
-move
-rotate
+--move
+--rotate
 drop
 embed
 -clear
 score
 lines
 level
-control
+-control
