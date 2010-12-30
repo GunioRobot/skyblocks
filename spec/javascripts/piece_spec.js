@@ -1,11 +1,13 @@
 describe( 'piece', function() {
 
-  var figure, field, piece, singleBlockFigure;
+  var figure, field, piece, next, state, singleBlockFigure;
   beforeEach( function() {
-    figure = SkyBlocks.figures[3]; // I figure
+    figure = SkyBlocks.figures[ 3 ]; // I figure
     field = new SkyBlocks.field();
     piece = new SkyBlocks.piece( figure, field );
-    singleBlockFigure = new SkyBlocks.figure( 3, 3, [0x10] );
+    next = new SkyBlocks.next();
+    state = { field: field, next: next, piece: piece }
+    singleBlockFigure = new SkyBlocks.figure( 3, 3, [ 0x10 ] );
   });
 
   describe( 'position', function() {
@@ -81,5 +83,51 @@ describe( 'piece', function() {
       expect( piece.collides() ).toBeTruthy();
     });
 
+  });
+
+  describe( 'update', function() {
+
+    describe( 'when piece has not landed', function() {
+
+      var initialX, initialY;
+      beforeEach( function() {
+        initialX = piece.x;
+        initialY = piece.y;
+        state.pieceLanded = false;
+        piece.update( state );
+      });
+
+      it( 'should not change the piece', function() {
+        expect( piece.x ).toEqual( initialX );
+        expect( piece.y ).toEqual( initialY );
+        expect( piece.orientation ).toEqual( 0 );
+        expect( piece.figure ).toEqual( figure );
+      });
+    });
+
+    describe( 'when piece landed', function() {
+
+      beforeEach( function() {
+        // move and rotate the piece somewhere so we can make sure it gets moved back
+        piece.x = 5;
+        piece.y = 10;
+        piece.orientation = 1;
+        state.pieceLanded = true;
+        piece.update( state );
+      });
+
+      it( 'should change the piece figure to the next figure', function() {
+        expect( piece.figure ).toEqual( next.figure );
+      });
+
+      it( 'should move the piece back to the top center of the field', function() {
+        expect( piece.x ).toEqual( Math.floor( ( field.width - figure.width ) / 2 ) );
+        expect( piece.y ).toEqual( 0 );
+      });
+
+      it( 'should set the orientation to 0', function() {
+        expect( piece.orientation ).toEqual( 0 );
+      });
+    });
   });
 });

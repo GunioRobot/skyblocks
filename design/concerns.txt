@@ -9,9 +9,8 @@ Concerns
 -rotate
 -drop
 -embed
--cycle
 -clear
 -score
 -level
 -control
-lines
+cycle

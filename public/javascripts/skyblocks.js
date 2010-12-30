@@ -114,13 +114,22 @@ SkyBlocks.field = function() {
 };
 
 //  SkyBlocks.piece
-//     a positioned figure in a field that handles collision detection
+//     the current figure that is in the field 
 
 SkyBlocks.piece = function( figure, field ) {
-  this.x = Math.floor( ( field.width - figure.width ) / 2 );
-  this.y = 0;
-  this.orientation = 0;
-  this.figure = figure;
+
+  this.init = function( figure ) {
+    this.x = Math.floor( ( field.width - figure.width ) / 2 );
+    this.y = 0;
+    this.orientation = 0;
+    this.figure = figure;
+  }
+  this.init( figure );
+
+  this.update = function( state ) {
+    if( state.pieceLanded )
+      this.init( state.next.figure );
+  }
 
   this.collides = function() {
     for( var x = 0; x < figure.width; x++ ) {
