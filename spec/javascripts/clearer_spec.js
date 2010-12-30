@@ -1,6 +1,6 @@
 describe( 'clearer', function() {
 
-  var field, blocks, clearedBlocks, clearer;
+  var field, blocks, clearedBlocks, clearer, state;
 
   beforeEach( function() {
     field = new SkyBlocks.field();
@@ -25,16 +25,17 @@ describe( 'clearer', function() {
       }
     }
 
-    clearer = new SkyBlocks.clearer( field );
+    clearer = new SkyBlocks.clearer();
+    state = { field: field };
   });
 
   describe( 'update', function() {
 
     describe( 'when piece did not land', function() {
 
-      var state;
       beforeEach( function() {
-        state = clearer.update( { pieceLanded: false } );
+        state.pieceLanded = false;
+        state = clearer.update( state );
       });
 
       it( 'should not clear any lines', function() {
@@ -51,9 +52,9 @@ describe( 'clearer', function() {
 
     describe( 'when piece landed', function() {
 
-      var state;
       beforeEach( function() {
-        state = clearer.update( { pieceLanded: true } );
+        state.pieceLanded = true;
+        state = clearer.update( state );
       });
 
       it( 'should properly clear the lines', function() {
