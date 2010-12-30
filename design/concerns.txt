@@ -11,7 +11,7 @@ Concerns
 -embed
 -cycle
 -clear
-score
-lines
-level
+-score
+-level
 -control
+lines

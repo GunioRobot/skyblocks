@@ -299,3 +299,15 @@ SkyBlocks.level = function( startLevel ) {
     this.level = startLevel + Math.floor( this.lines / 10.0 );
   }
 }
+
+//  SkyBlocks.score
+//     score keeping logic
+
+SkyBlocks.score = function() {
+  this.score = 0;
+  this.linePoints = [ 0, 4, 10, 30, 120 ];
+
+  this.update = function( state ) {
+    this.score += state.level * this.linePoints[ state.linesCleared ];
+  }
+}
