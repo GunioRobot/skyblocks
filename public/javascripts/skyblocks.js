@@ -86,16 +86,21 @@ SkyBlocks.next = function() {
 //     a positioned figure in a field that handles collision detection
 
 SkyBlocks.piece = function( figure, field ) {
-  this.blocks = figure.orientations[ 0 ];
   this.x = Math.floor( ( field.width - figure.width ) / 2 );
   this.y = 0;
+  this.orientation = 0;
+  this.figure = figure;
+
+  this.blocks = function() {
+    return figure.orientations[ this.orientation ];
+  }
 
   this.collides = function() {
     for( var x = 0; x < figure.width; x++ ) {
       for( var y = 0; y < figure.height; y++ ) {
         var fx = this.x + x;
         var fy = this.y + y;
-        if( this.blocks[ x ][ y ] == 0 )
+        if( this.blocks()[ x ][ y ] == 0 )
           continue;
         if( field.outOfBounds( fx, fy ) || field.blocks[ fx ][ fy ] > 0 )
           return true;
@@ -111,9 +116,10 @@ SkyBlocks.piece = function( figure, field ) {
 SkyBlocks.left = function() {
   this.update = function( state ) {
     if( state.controller.isDown( SkyBlocks.controls.left ) ) {
+      var initialX = state.piece.x;
       state.piece.x -= 1;
       if( state.piece.collides() )
-        state.piece.x += 1;
+        state.piece.x = initialX;
     }
   }
 }
@@ -124,9 +130,10 @@ SkyBlocks.left = function() {
 SkyBlocks.right = function() {
   this.update = function( state ) {
     if( state.controller.isDown( SkyBlocks.controls.right ) ) {
+      var initialX = state.piece.x;
       state.piece.x += 1;
       if( state.piece.collides() )
-        state.piece.x -= 1;
+        state.piece.x = initialX;
     }
   }
 }
@@ -137,9 +144,42 @@ SkyBlocks.right = function() {
 SkyBlocks.down = function() {
   this.update = function( state ) {
     if( state.controller.isDown( SkyBlocks.controls.down ) ) {
+      var initialY = state.piece.y;
       state.piece.y += 1;
       if( state.piece.collides() )
-        state.piece.y -= 1;
+        state.piece.y = initialY;
+    }
+  }
+}
+
+//  SkyBlocks.clockwise
+//     handles rotating the piece clockwise within the field
+
+SkyBlocks.clockwise = function() {
+  this.update = function( state ) {
+    if( state.controller.isDown( SkyBlocks.controls.clockwise ) ) {
+      var initialOrientation = state.piece.orientation;
+      state.piece.orientation -= 1;
+      if( state.piece.orientation < 0 )
+        state.piece.orientation = state.piece.figure.orientations.length - 1;
+      if( state.piece.collides() )
+        state.piece.orientation = initialOrientation;
+    }
+  }
+}
+
+//  SkyBlocks.counterClockwise
+//     handles rotating the piece counter clockwise within the field
+
+SkyBlocks.counterClockwise = function() {
+  this.update = function( state ) {
+    if( state.controller.isDown( SkyBlocks.controls.counterClockwise ) ) {
+      var initialOrientation = state.piece.orientation;
+      state.piece.orientation += 1;
+      if( state.piece.orientation == state.piece.figure.orientations.length )
+        state.piece.orientation = 0;
+      if( state.piece.collides() )
+        state.piece.orientation = initialOrientation;
     }
   }
 }
@@ -192,8 +232,8 @@ SkyBlocks.controls = {}
 SkyBlocks.controls.left = 0;
 SkyBlocks.controls.right = 1;
 SkyBlocks.controls.down = 2;
-SkyBlocks.controls.rotateClockwise = 3;
-SkyBlocks.controls.rotateCounterClockwise = 4;
+SkyBlocks.controls.clockwise = 3;
+SkyBlocks.controls.counterClockwise = 4;
 SkyBlocks.controls.drop = 5;
 
 //  SkyBlocks.controller

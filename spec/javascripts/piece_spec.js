@@ -8,16 +8,6 @@ describe( 'piece', function() {
     singleBlockFigure = new SkyBlocks.figure( 3, 3, [0x10] );
   });
 
-  describe( 'blocks', function() {
-
-    it( 'has the same blocks as the figures first orientation', function() {
-      var orientation = figure.orientations[ 0 ];
-      for( var x = 0; x < figure.width; x++ )
-        for( var y = 0; y< figure.height; y++ )
-          expect( piece.blocks[ x ][ y ] ).toEqual( orientation[ x ][ y ] );
-    });
-  });
-
   describe( 'position', function() {
 
     it( 'starts at the top center of the field', function() {
@@ -25,7 +15,24 @@ describe( 'piece', function() {
       expect( piece.y ).toEqual( 0 );
     });
   });
-  
+
+  describe( 'orientation', function() {
+
+    it( 'is initially 0', function() {
+      expect( piece.orientation ).toEqual( 0 );
+    });
+  });
+
+  describe( 'blocks', function() {
+
+    it( 'has the same blocks as the figures first orientation', function() {
+      var orientation = figure.orientations[ 0 ];
+      for( var x = 0; x < figure.width; x++ )
+        for( var y = 0; y< figure.height; y++ )
+          expect( piece.blocks()[ x ][ y ] ).toEqual( orientation[ x ][ y ] );
+    });
+  });
+
   describe( 'collision', function() {
 
     beforeEach( function() {
