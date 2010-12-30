@@ -6,14 +6,14 @@ describe( 'gravity', function() {
     figure = SkyBlocks.figures[ 0 ];
     bottomY = field.height - 2; // bottom y for the L figure
     piece = new SkyBlocks.piece( figure, field );
-    gravity = new SkyBlocks.gravity( 2.5 );
-    state = { elapsed: 3000, piece: piece }
+    gravity = new SkyBlocks.gravity();
+    state = { level: 3, elapsed: 3000, piece: piece }
     initialY = piece.y;
   });
 
-  it( 'moves the piece down correctly over time', function() {
+  it( 'moves the piece down correctly at a rate of level/blocks per minute', function() {
     gravity.update( state );
-    expect( piece.y ).toEqual( initialY + 7.5 );
+    expect( piece.y ).toEqual( initialY + 9 );
   });
 
   it( 'lands the piece once the piece collides', function() {

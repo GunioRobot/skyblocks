@@ -140,9 +140,9 @@ SkyBlocks.piece = function( figure, field ) {
 //  SkyBlocks.gravity
 //     moves the piece down in the field at a given rate
 
-SkyBlocks.gravity = function( rate ) {
+SkyBlocks.gravity = function() {
   this.update = function( state ) {
-    state.piece.y += rate * ( state.elapsed / 1000.0 );
+    state.piece.y += state.level * ( state.elapsed / 1000.0 );
     while( state.piece.collides() ) {
       state.pieceLanded = true;
       state.piece.y--;
@@ -287,3 +287,15 @@ SkyBlocks.clearer = function() {
   }
 }
 
+//  SkyBlocks.level
+//     handles when to change levels
+
+SkyBlocks.level = function( startLevel ) {
+  this.level = startLevel;
+  this.lines = 0;
+
+  this.update = function( state ) {
+    this.lines += state.linesCleared;
+    this.level = startLevel + Math.floor( this.lines / 10.0 );
+  }
+}

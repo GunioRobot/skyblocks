@@ -7,8 +7,9 @@ Concerns
 -gravity
 -move
 -rotate
-drop
+-drop
 -embed
+-cycle
 -clear
 score
 lines
