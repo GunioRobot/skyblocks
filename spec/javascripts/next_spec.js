@@ -15,6 +15,12 @@ describe( 'next', function() {
 
   describe( 'update', function() {
 
+    it( 'sets the state next to itself', function() {
+      var state = {};
+      next.update( state );
+      expect( state.next ).toEqual( next );
+    });
+
     describe( 'when a piece did not land', function() {
 
       var figure;

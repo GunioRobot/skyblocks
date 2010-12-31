@@ -19,4 +19,13 @@ describe( 'field', function() {
     });
 
   });
+
+  describe( 'update', function() {
+
+    it( 'it sets the state field to itself', function() {
+      var state = {};
+      field.update( state );
+      expect( state.field ).toEqual( field );
+    });
+  });
 });

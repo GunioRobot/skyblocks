@@ -23,10 +23,14 @@ SkyBlocks.controller = function() {
   this.sendDown = function( control ) { downs[ control ] = true; }
   this.sendUp = function( control ) { downs[ control ] = false; }
   this.isDown = function( control ) { return downs[ control ]; }
+
+  this.update = function( state ) {
+    state.controller = this;
+  }
 }
 
 //  SkyBlocks.keyboard
-//     sets up the user's keyboard to be uses as the game controller
+//     sets up the user's keyboard to be used as the game controller
 
 SkyBlocks.keyboard = function() {
   var me = this;
@@ -93,6 +97,7 @@ SkyBlocks.next = function() {
   this.figure = SkyBlocks.figures[ 0 ];
 
   this.update = function( state ) {
+    state.next = this;
     if( state.pieceLanded ) {
       var rand = Math.floor( Math.random() * SkyBlocks.figures.length );
       this.figure = SkyBlocks.figures[ rand ];
@@ -107,6 +112,10 @@ SkyBlocks.field = function() {
   this.width = 10;
   this.height = 20;
   this.blocks = new SkyBlocks.blocks( this.width, this.height );
+
+  this.update = function( state ) {
+    state.field = this;
+  }
 
   this.outOfBounds = function( x, y ) {
     return x < 0 || x >= this.width || y < 0 || y >= this.height;
@@ -127,6 +136,7 @@ SkyBlocks.piece = function( figure, field ) {
   this.init( figure );
 
   this.update = function( state ) {
+    state.piece = this;
     if( state.pieceLanded )
       this.init( state.next.figure );
   }
@@ -156,7 +166,6 @@ SkyBlocks.gravity = function() {
       state.pieceLanded = true;
       state.piece.y--;
     }
-    return state;
   }
 }
 
@@ -165,14 +174,14 @@ SkyBlocks.gravity = function() {
 
 SkyBlocks.embedder = function() {
   this.update = function( state ) {
-    if( !state.pieceLanded )
-      return;
-    for( var x = 0; x < state.piece.figure.width; x++ ) {
-      for( var y = 0; y < state.piece.figure.height; y++ ) {
-        var fx = Math.floor( state.piece.x + x );
-        var fy = Math.floor( state.piece.y + y );
-        var pieceBlock = state.piece.figure.orientations[ state.piece.orientation ][ x ][ y ];
-        state.field.blocks[ fx ][ fy ] = pieceBlock;
+    if( state.pieceLanded ) {
+      for( var x = 0; x < state.piece.figure.width; x++ ) {
+        for( var y = 0; y < state.piece.figure.height; y++ ) {
+          var fx = Math.floor( state.piece.x + x );
+          var fy = Math.floor( state.piece.y + y );
+          var pieceBlock = state.piece.figure.orientations[ state.piece.orientation ][ x ][ y ];
+          state.field.blocks[ fx ][ fy ] = pieceBlock;
+        }
       }
     }
   }
@@ -251,7 +260,6 @@ SkyBlocks.dropper = function() {
       state.piece.y--;
       state.pieceLanded = true;
     }
-    return state;
   }
 }
 
@@ -262,11 +270,13 @@ SkyBlocks.clearer = function() {
   var field;
 
   this.update = function( state ) {
-    if( !state.pieceLanded )
-      return { linesCleared: 0 }
+    if( !state.pieceLanded ) {
+      state.linesCleared = 0;
+      return;
+    }
     field = state.field;
     this.clear();
-    return { linesCleared: this.linesCleared }
+    state.linesCleared = this.linesCleared;
   }
 
   this.clear = function( state ) {
@@ -306,6 +316,7 @@ SkyBlocks.level = function( startLevel ) {
   this.update = function( state ) {
     this.lines += state.linesCleared;
     this.level = startLevel + Math.floor( this.lines / 10.0 );
+    state.level = this.level;
   }
 }
 

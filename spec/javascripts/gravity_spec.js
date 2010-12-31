@@ -18,7 +18,7 @@ describe( 'gravity', function() {
 
   it( 'lands the piece once the piece collides', function() {
     state.elapsed = 20000; // 20 seconds will put the piece past the bottom of the field
-    state = gravity.update( state );
+    gravity.update( state );
     expect( piece.y ).toEqual( bottomY );
     expect( state.pieceLanded ).toBeTruthy();
   });

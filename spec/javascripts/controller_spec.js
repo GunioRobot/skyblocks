@@ -23,4 +23,13 @@ describe( 'controller', function() {
       expect( controller.isDown( 9 ) ).toBeFalsy();
     });
   });
+
+  describe( 'update', function() {
+
+    it( 'sets the state controller to itself', function() {
+      var state = {};
+      controller.update( state );
+      expect( state.controller ).toEqual( controller );
+    });
+  });
 });

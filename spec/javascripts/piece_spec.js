@@ -87,6 +87,11 @@ describe( 'piece', function() {
 
   describe( 'update', function() {
 
+    it( 'sets the state piece to itself', function() {
+      piece.update( state );
+      expect( state.piece ).toEqual( piece );
+    });
+
     describe( 'when piece has not landed', function() {
 
       var initialX, initialY;

@@ -35,7 +35,7 @@ describe( 'clearer', function() {
 
       beforeEach( function() {
         state.pieceLanded = false;
-        state = clearer.update( state );
+        clearer.update( state );
       });
 
       it( 'should not clear any lines', function() {
@@ -54,7 +54,7 @@ describe( 'clearer', function() {
 
       beforeEach( function() {
         state.pieceLanded = true;
-        state = clearer.update( state );
+        clearer.update( state );
       });
 
       it( 'should properly clear the lines', function() {

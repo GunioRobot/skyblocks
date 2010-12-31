@@ -24,7 +24,7 @@ describe( 'dropper', function() {
     });
 
     it( 'lands the piece', function() {
-      state = dropper.update( state );
+      dropper.update( state );
       expect( state.pieceLanded ).toBeTruthy();
     });
   });
