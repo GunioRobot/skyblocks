@@ -1,5 +1,7 @@
-state piece and level need setup manually in the game loop, kind of wierd
+-state piece and level need setup manually in the game loop, kind of wierd
 had to manually pick a starting figure for the piece, kind of wierd
+pieceLanded needs to get set back to false at some point
+should just have a piece.blocks instead of going through the figure
 bug in piece where it was using initial passed in figure instead of this.figure
   we need a way to prevent this (naming, options object, etc)
 Math.floor missing in some field coordinates

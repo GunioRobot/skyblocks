@@ -1,13 +1,13 @@
 Concerns
 ----------------
 -field
+-level
+-score
+-next
+-piece
 -move
 -rotate
 -drop
 -gravity
 -embed
 -clear
--score
--level
--piece
--next
