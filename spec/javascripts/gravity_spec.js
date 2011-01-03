@@ -11,6 +11,12 @@ describe( 'gravity', function() {
     initialY = piece.y;
   });
 
+  it( 'resets pieceLanded', function() {
+    state.pieceLanded = true;
+    gravity.update( state );
+    expect( state.pieceLanded ).toBeFalsy();
+  });
+
   it( 'moves the piece down correctly at a rate of level/blocks per minute', function() {
     gravity.update( state );
     expect( piece.y ).toEqual( initialY + 9 );

@@ -161,6 +161,7 @@ SkyBlocks.piece = function( figure, field ) {
 
 SkyBlocks.gravity = function() {
   this.update = function( state ) {
+    state.pieceLanded = false;
     state.piece.y += state.level * ( state.elapsed / 1000.0 );
     while( state.piece.collides() ) {
       state.pieceLanded = true;

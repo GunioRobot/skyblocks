@@ -3,8 +3,8 @@ Concerns
 -field
 -level
 -score
--next
 -piece
+-next
 -move
 -rotate
 -drop
