@@ -22,9 +22,8 @@ describe( 'embedder', function() {
       for( var y = 0; y < piece.figure.height; y++ ) {
         var fx = Math.floor( piece.x + x );
         var fy = Math.floor( piece.y + y );
-        var fieldBlock = field.blocks[ fx ][ fy ];
         var pieceBlock = piece.figure.orientations[ piece.orientation ][ x ][ y ];
-        expect( fieldBlock ).toEqual( pieceBlock );
+        expect( field.lines[ fy ].indexOf( fx ) ).toBeGreaterThan( -1 );
       }
     }
   });

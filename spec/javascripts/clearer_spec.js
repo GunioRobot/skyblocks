@@ -1,29 +1,25 @@
 describe( 'clearer', function() {
 
-  var field, blocks, clearedBlocks, clearer, state;
+  var field, fullLine, partialLine, clearer, state;
 
   beforeEach( function() {
     field = new SkyBlocks.field();
-    blocks = [];
-    clearedBlocks = [];
 
     // create a field with two full lines filled in and some 
     // partially filled lines in between so we can test clearing
-    for( var x = 0; x < field.width; x++ ) {
-      blocks[ x ] = [];
-      clearedBlocks[ x ] = [];
+    fullLine = [];
+    for( var i = 0; i < field.width; i++ )
+      fullLine.push( i );
 
-      for( var y = 0; y < field.height; y++ ) {
-        var isFullLine = y == field.height - 1 || y == field.height - 3;
-        var isPartialLine = y == field.height - 2 || y == field.height - 4;
-        var isClearPartialLine = y == field.height - 1 || y == field.height - 2;
-        var isEvenBlock = x % 2 == 0;
+    partialLine = [];
+    for( var i = 0; i < field.width; i += 2 )
+      partialLine.push( i );
 
-        blocks[ x ][ y ] = isFullLine || ( isPartialLine && isEvenBlock ) ? 1 : 0;
-        field.blocks[ x ][ y ] = isFullLine || ( isPartialLine && isEvenBlock ) ? 1 : 0;
-        clearedBlocks[ x ][ y ] = isClearPartialLine && isEvenBlock ? 1 : 0; 
-      }
-    }
+    field.lines[ field.lines.length - 1 ] = fullLine.slice( 0 );
+    field.lines[ field.lines.length - 2 ] = fullLine.slice( 0 );
+    field.lines[ field.lines.length - 3 ] = partialLine.slice( 0 );
+    field.lines[ field.lines.length - 4 ] = fullLine.slice( 0 );
+    field.lines[ field.lines.length - 5 ] = partialLine.slice( 0 );
 
     clearer = new SkyBlocks.clearer();
     state = { field: field };
@@ -39,12 +35,14 @@ describe( 'clearer', function() {
       });
 
       it( 'should not clear any lines', function() {
-        for( var x = 0; x < field.width; x++ )
-          for( var y = 0; y < field.height; y++ )
-            expect( field.blocks[ x ][ y ] ).toEqual( blocks[ x ][ y ] );
+        expect( field.lines[ field.lines.length - 1 ] ).toEqual( fullLine );
+        expect( field.lines[ field.lines.length - 2 ] ).toEqual( fullLine );
+        expect( field.lines[ field.lines.length - 3 ] ).toEqual( partialLine );
+        expect( field.lines[ field.lines.length - 4 ] ).toEqual( fullLine );
+        expect( field.lines[ field.lines.length - 5 ] ).toEqual( partialLine );
       });
 
-      it( 'should return 0 for number of lines cleared', function() {
+      it( 'set the state number of lines cleared', function() {
         expect( state.linesCleared ).toEqual( 0 );
       });
 
@@ -58,13 +56,14 @@ describe( 'clearer', function() {
       });
 
       it( 'should properly clear the lines', function() {
-        for( var x = 0; x < field.width; x++ )
-          for( var y = 0; y < field.height; y++ )
-            expect( field.blocks[ x ][ y ] ).toEqual( clearedBlocks[ x ][ y ] );
+        expect( field.lines[ field.lines.length - 1 ] ).toEqual( partialLine );
+        expect( field.lines[ field.lines.length - 2 ] ).toEqual( partialLine );
+        expect( field.lines[ field.lines.length - 3 ] ).toEqual( [] );
+        expect( field.lines[ field.lines.length - 4 ] ).toEqual( [] );
       });
 
-      it( 'should return the number of lines cleared', function() {
-        expect( state.linesCleared ).toEqual( 2 );
+      it( 'set the state number of lines cleared', function() {
+        expect( state.linesCleared ).toEqual( 3 );
       });
 
     });

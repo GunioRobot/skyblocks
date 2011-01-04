@@ -4,7 +4,7 @@ describe( 'dropper', function() {
   beforeEach( function() {
     field = new SkyBlocks.field();
     figure = SkyBlocks.figures[ 0 ];
-    bottomY = field.height - 2; // bottom y for the L figure
+    bottomY = field.lines.length - 2; // bottom y for the L figure
     piece = new SkyBlocks.piece( figure, field );
     dropper = new SkyBlocks.dropper();
     controller = new SkyBlocks.controller();

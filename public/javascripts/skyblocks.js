@@ -105,20 +105,28 @@ SkyBlocks.next = function() {
   }
 }
 
+SkyBlocks.lines = function( length ) {
+  var lines = [];
+  for( var i = 0; i < length; i++ )
+    lines[ i ] = [];
+  return lines;
+}
+
 //  SkyBlocks.field
 //     main gameplay area where pieces fall and collect
 
 SkyBlocks.field = function() {
   this.width = 10;
-  this.height = 20;
-  this.blocks = new SkyBlocks.blocks( this.width, this.height );
+  //this.height = 20;
+  this.lines = new SkyBlocks.lines( 20 );
+  //this.blocks = new SkyBlocks.blocks( this.width, this.height );
 
   this.update = function( state ) {
     state.field = this;
   }
 
   this.outOfBounds = function( x, y ) {
-    return x < 0 || x >= this.width || y < 0 || y >= this.height;
+    return x < 0 || x >= this.width || y < 0 || y >= this.lines.length;
   }
 };
 
@@ -148,7 +156,7 @@ SkyBlocks.piece = function( figure, field ) {
         var fy = this.y + y;
         if( this.figure.orientations[ this.orientation ][ x ][ y ] == 0 )
           continue;
-        if( field.outOfBounds( fx, fy ) || field.blocks[ fx ][ fy ] > 0 )
+        if( field.outOfBounds( fx, fy ) || field.lines[ fy ].indexOf( fx ) >= 0 )
           return true;
       }
     }
@@ -181,7 +189,7 @@ SkyBlocks.embedder = function() {
           var fx = Math.floor( state.piece.x + x );
           var fy = Math.floor( state.piece.y + y );
           var pieceBlock = state.piece.figure.orientations[ state.piece.orientation ][ x ][ y ];
-          state.field.blocks[ fx ][ fy ] = pieceBlock;
+          state.field.lines[ fy ].push( fx );
         }
       }
     }
@@ -268,42 +276,19 @@ SkyBlocks.dropper = function() {
 //     clears lines in the field
 
 SkyBlocks.clearer = function() {
-  var field;
-
   this.update = function( state ) {
-    if( !state.pieceLanded ) {
-      state.linesCleared = 0;
-      return;
+    state.linesCleared = 0;
+    if( state.pieceLanded ) {
+      var y = state.field.lines.length - 1;
+      while( y >= 0 ) {
+        if( state.field.lines[ y ].length == state.field.width ) {
+          state.field.lines.splice( y, 1 );
+          state.field.lines.splice( 0, 0, [] );
+          state.linesCleared++;
+        }
+        else y--;
+      }
     }
-    field = state.field;
-    this.clear();
-    state.linesCleared = this.linesCleared;
-  }
-
-  this.clear = function( state ) {
-    this.blocks = new SkyBlocks.blocks( field.width, field.height );
-    this.linesCleared = 0;
-    for( var y = field.height - 1; y >= 0; y-- )
-      this.clearLine( y );
-    field.blocks = this.blocks;
-  }
-
-  this.clearLine = function( y ) {
-    if( this.lineCompleted( y ) )
-      this.linesCleared++;
-    else this.copyLine( y );
-  }
-
-  this.copyLine = function( y ) {
-    for( var x = 0; x < field.width; x++ )
-      this.blocks[ x ][ y + this.linesCleared ] = field.blocks[ x ][ y ];
-  }
-
-  this.lineCompleted = function( y ) {
-    for( var x = 0; x < field.width; x++ )
-      if( field.blocks[ x ][ y ] == 0 ) 
-        return false;
-    return true;
   }
 }
 

@@ -67,19 +67,19 @@ describe( 'piece', function() {
     });
 
     it( 'does not collide if out if below the bottom of the field but blocks are in bounds', function() {
-      piece.y = field.height - 2;
+      piece.y = field.lines.length - 2;
       expect( piece.collides() ).toBeFalsy();
     });
 
     it( 'collides if any blocks are below the bottom of the field', function() {
-      piece.y = field.height - 1;
+      piece.y = field.lines.length - 1;
       expect( piece.collides() ).toBeTruthy();
     });
 
     it( 'collides if overlaps any other blocks embedded in the field', function() {
       piece.x = 4;
       piece.y = 1;
-      field.blocks[ 5 ][ 2 ] = 1;
+      field.lines[ 2 ].push( 5 );
       expect( piece.collides() ).toBeTruthy();
     });
 
