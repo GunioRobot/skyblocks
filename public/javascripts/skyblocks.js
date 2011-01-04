@@ -49,43 +49,17 @@ SkyBlocks.lines = function( length ) {
   return lines;
 }
 
-//  SkyBlocks.figure
-//     defines a shape of 4 blocks in different orientations
-
-SkyBlocks.figure = function( width, height, orientations ) {
-  this.width = width;
-  this.height = height;
-
-  this.hexToArray = function( hex ) {
-    var orientation = new SkyBlocks.lines( height );
-    var n = 0;
-    for( var y = 0; y < height; y++ ) {
-      for( var x = 0; x < width; x++ ) {
-        var f = Math.pow( 2, ( width * height ) - 1 - n );
-        if( ( hex & f ) / f > 0 )
-          orientation[ y ].push( x );
-        n++;
-      }
-    }
-    return orientation;
-  }
-
-  this.orientations = [];
-  for( var i = 0; i < orientations.length; i++ )
-    this.orientations[ i ] = this.hexToArray( orientations[ i ] );
-}
-
 //  SkyBlocks.figures
 //     store all the figures in an array
 
 SkyBlocks.figures = [
-  new SkyBlocks.figure( 3, 3, [ 0x78, 0x192, 0x3C, 0x93 ] ), // L
-  new SkyBlocks.figure( 3, 3, [ 0x138, 0xD2, 0x39, 0x96 ] ), // J
-  new SkyBlocks.figure( 3, 3, [ 0xB8, 0x9A, 0x3A, 0xB2 ] ), // T
-  new SkyBlocks.figure( 4, 4, [ 0xF00, 0x4444 ] ), // I
-  new SkyBlocks.figure( 3, 3, [ 0x1E, 0x99 ] ), // S
-  new SkyBlocks.figure( 3, 3, [ 0x33, 0x5A ] ), // Z
-  new SkyBlocks.figure( 2, 2, [ 0xF ] ) // O
+  { size: 3, orientations: [ [[2],[0,1,2],[]], [[0,1],[1],[1]], [[],[0,1,2],[0]], [[1],[1],[1,2]] ] }, // L
+  { size: 3, orientations: [ [[0],[0,1,2],[]], [[1],[1],[0,1]], [[],[0,1,2],[2]], [[1,2],[1],[1]] ] }, // J
+  { size: 3, orientations: [ [[1],[0,1,2],[]], [[1],[0,1],[1]], [[],[0,1,2],[1]], [[1],[2,3],[1]] ] }, // T
+  { size: 4, orientations: [ [[],[0,1,2,3],[],[]], [[1],[1],[1],[1]] ] }, // I
+  { size: 3, orientations: [ [[1,2],[0,1],[]], [[0],[0,1],[1]] ] }, // S
+  { size: 3, orientations: [ [[0,1],[1,2],[]], [[1],[0,1],[0]] ] }, // Z
+  { size: 2, orientations: [ [[0,1],[0,1]] ] } // O
 ];
 
 //  SkyBlocks.next
@@ -125,7 +99,7 @@ SkyBlocks.field = function() {
 SkyBlocks.piece = function( figure, field ) {
 
   this.init = function( figure ) {
-    this.x = Math.floor( ( field.width - figure.width ) / 2 );
+    this.x = Math.floor( ( field.width - figure.size ) / 2 );
     this.y = 0;
     this.orientation = 0;
     this.figure = figure;
@@ -139,7 +113,7 @@ SkyBlocks.piece = function( figure, field ) {
   }
 
   this.collides = function() {
-    for( var y = 0; y < figure.height; y++ ) {
+    for( var y = 0; y < figure.size; y++ ) {
       for( var x = 0; x < this.figure.orientations[ this.orientation ][ y ].length; x++ ) {
         var fx = this.x + this.figure.orientations[ this.orientation ][ y ][ x ];
         var fy = this.y + y;
@@ -171,8 +145,8 @@ SkyBlocks.gravity = function() {
 SkyBlocks.embedder = function() {
   this.update = function( state ) {
     if( state.pieceLanded ) {
-      for( var x = 0; x < state.piece.figure.width; x++ ) {
-        for( var y = 0; y < state.piece.figure.height; y++ ) {
+      for( var x = 0; x < state.piece.figure.size; x++ ) {
+        for( var y = 0; y < state.piece.figure.size; y++ ) {
           var fx = Math.floor( state.piece.x + x );
           var fy = Math.floor( state.piece.y + y );
           var pieceBlock = state.piece.figure.orientations[ state.piece.orientation ][ x ][ y ];

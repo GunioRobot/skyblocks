@@ -7,13 +7,13 @@ describe( 'piece', function() {
     piece = new SkyBlocks.piece( figure, field );
     next = new SkyBlocks.next();
     state = { field: field, next: next, piece: piece }
-    singleBlockFigure = new SkyBlocks.figure( 3, 3, [ 0x10 ] );
+    singleBlockFigure = { size: 3, orientations: [ [[],[1],[]] ] };
   });
 
   describe( 'position', function() {
 
     it( 'starts at the top center of the field', function() {
-      expect( piece.x ).toEqual( Math.floor( ( field.width - figure.width ) / 2 ) );
+      expect( piece.x ).toEqual( Math.floor( ( field.width - figure.size ) / 2 ) );
       expect( piece.y ).toEqual( 0 );
     });
   });
@@ -126,7 +126,7 @@ describe( 'piece', function() {
       });
 
       it( 'should move the piece back to the top center of the field', function() {
-        expect( piece.x ).toEqual( Math.floor( ( field.width - figure.width ) / 2 ) );
+        expect( piece.x ).toEqual( Math.floor( ( field.width - figure.size ) / 2 ) );
         expect( piece.y ).toEqual( 0 );
       });
 

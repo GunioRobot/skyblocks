@@ -18,8 +18,8 @@ describe( 'embedder', function() {
   it( 'should embed the piece into the field if piece is landed', function() {
     state.pieceLanded = true;
     embedder.update( state );
-    for( var x = 0; x < piece.figure.width; x++ ) {
-      for( var y = 0; y < piece.figure.height; y++ ) {
+    for( var x = 0; x < piece.figure.size; x++ ) {
+      for( var y = 0; y < piece.figure.size; y++ ) {
         var fx = Math.floor( piece.x + x );
         var fy = Math.floor( piece.y + y );
         var pieceBlock = piece.figure.orientations[ piece.orientation ][ x ][ y ];
