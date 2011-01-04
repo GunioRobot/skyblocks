@@ -39,17 +39,14 @@ SkyBlocks.keyboard = function() {
 }
 SkyBlocks.keyboard.prototype = new SkyBlocks.controller();
 
-//  SkyBlocks.blocks
-//     returns an empty array of blocks
+//  SkyBlocks.lines
+//     returns an array of lines
 
-SkyBlocks.blocks = function( width, height ) {
-  var blocks = [];
-  for( var x = 0; x < width; x++ ) {
-    blocks[ x ] = [];
-    for( var y = 0; y < height; y++ )
-      blocks[ x ][ y ] = 0;
-  }
-  return blocks;
+SkyBlocks.lines = function( length ) {
+  var lines = [];
+  for( var i = 0; i < length; i++ )
+    lines[ i ] = [];
+  return lines;
 }
 
 //  SkyBlocks.figure
@@ -60,12 +57,13 @@ SkyBlocks.figure = function( width, height, orientations ) {
   this.height = height;
 
   this.hexToArray = function( hex ) {
-    var orientation = new SkyBlocks.blocks( width, height );
+    var orientation = new SkyBlocks.lines( height );
     var n = 0;
     for( var y = 0; y < height; y++ ) {
       for( var x = 0; x < width; x++ ) {
         var f = Math.pow( 2, ( width * height ) - 1 - n );
-        orientation[ x ][ y ] = ( hex & f ) / f;
+        if( ( hex & f ) / f > 0 )
+          orientation[ y ].push( x );
         n++;
       }
     }
@@ -81,13 +79,13 @@ SkyBlocks.figure = function( width, height, orientations ) {
 //     store all the figures in an array
 
 SkyBlocks.figures = [
-  new SkyBlocks.figure(3, 3, [ 0x78, 0x192, 0x3C, 0x93 ]), // L
-  new SkyBlocks.figure(3, 3, [ 0x138, 0xD2, 0x39, 0x96 ]), // J
-  new SkyBlocks.figure(3, 3, [ 0xB8, 0x9A, 0x3A, 0xB2 ]), // T
-  new SkyBlocks.figure(4, 4, [ 0xF00, 0x4444 ]), // I
-  new SkyBlocks.figure(3, 3, [ 0x1E, 0x99 ]), // S
-  new SkyBlocks.figure(3, 3, [ 0x33, 0x5A ]), // Z
-  new SkyBlocks.figure(2, 2, [ 0xF ]) // O
+  new SkyBlocks.figure( 3, 3, [ 0x78, 0x192, 0x3C, 0x93 ] ), // L
+  new SkyBlocks.figure( 3, 3, [ 0x138, 0xD2, 0x39, 0x96 ] ), // J
+  new SkyBlocks.figure( 3, 3, [ 0xB8, 0x9A, 0x3A, 0xB2 ] ), // T
+  new SkyBlocks.figure( 4, 4, [ 0xF00, 0x4444 ] ), // I
+  new SkyBlocks.figure( 3, 3, [ 0x1E, 0x99 ] ), // S
+  new SkyBlocks.figure( 3, 3, [ 0x33, 0x5A ] ), // Z
+  new SkyBlocks.figure( 2, 2, [ 0xF ] ) // O
 ];
 
 //  SkyBlocks.next
@@ -105,21 +103,12 @@ SkyBlocks.next = function() {
   }
 }
 
-SkyBlocks.lines = function( length ) {
-  var lines = [];
-  for( var i = 0; i < length; i++ )
-    lines[ i ] = [];
-  return lines;
-}
-
 //  SkyBlocks.field
 //     main gameplay area where pieces fall and collect
 
 SkyBlocks.field = function() {
   this.width = 10;
-  //this.height = 20;
   this.lines = new SkyBlocks.lines( 20 );
-  //this.blocks = new SkyBlocks.blocks( this.width, this.height );
 
   this.update = function( state ) {
     state.field = this;
@@ -150,12 +139,10 @@ SkyBlocks.piece = function( figure, field ) {
   }
 
   this.collides = function() {
-    for( var x = 0; x < figure.width; x++ ) {
-      for( var y = 0; y < figure.height; y++ ) {
-        var fx = this.x + x;
+    for( var y = 0; y < figure.height; y++ ) {
+      for( var x = 0; x < this.figure.orientations[ this.orientation ][ y ].length; x++ ) {
+        var fx = this.x + this.figure.orientations[ this.orientation ][ y ][ x ];
         var fy = this.y + y;
-        if( this.figure.orientations[ this.orientation ][ x ][ y ] == 0 )
-          continue;
         if( field.outOfBounds( fx, fy ) || field.lines[ fy ].indexOf( fx ) >= 0 )
           return true;
       }

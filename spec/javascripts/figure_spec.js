@@ -8,30 +8,16 @@ describe( 'figure', function() {
       figure = new SkyBlocks.figure( 3, 3, orientations );
     });
 
-    it( 'creates the correct blocks for the orientations', function() {
-      var expected = [
-        [[0,1,0],
-         [0,1,0],
-         [1,1,0]],
-        [[1,0,0],
-         [1,1,1],
-         [0,0,0]],
-        [[0,1,1],
-         [0,1,0],
-         [0,1,0]],
-        [[0,0,0],
-         [1,1,1],
-         [0,0,1]]
-      ];
+    it( 'creates the correct lines for the orientations', function() {
+      var expected = [ [[2],[0,1,2],[]], [[0,1],[1],[1]], [[],[0,1,2],[0]], [[1],[1],[1,2]] ];
 
       expect( figure.orientations.length ).toEqual( orientations.length );
 
       for( var i = 0; i < figure.orientations.length; i++ ) {
-        var figureBlocks = figure.orientations[ i ];
-        var expectedBlocks = expected[ i ];
-        for( var x = 0; x < figure.width; x++ )
-          for( var y = 0; y < figure.height; y++ )
-            expect( figureBlocks[ x ][ y ] ).toEqual( expectedBlocks[ x ][ y ] );
+        var figureLines = figure.orientations[ i ];
+        var expectedLines = expected[ i ];
+        for( var y = 0; y < figure.height; y++ )
+          expect( figureLines[ y ] ).toEqual( expectedLines[ y ] );
       }
     });
   });
