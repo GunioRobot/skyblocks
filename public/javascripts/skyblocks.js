@@ -145,11 +145,10 @@ SkyBlocks.gravity = function() {
 SkyBlocks.embedder = function() {
   this.update = function( state ) {
     if( state.pieceLanded ) {
-      for( var x = 0; x < state.piece.figure.size; x++ ) {
-        for( var y = 0; y < state.piece.figure.size; y++ ) {
-          var fx = Math.floor( state.piece.x + x );
+      for( var y = 0; y < state.piece.figure.size; y++ ) {
+        for( var x = 0; x < state.piece.figure.orientations[ state.piece.orientation ][ y ].length; x++ ) {
+          var fx = Math.floor( state.piece.x + state.piece.figure.orientations[ state.piece.orientation ][ y ][ x ] );
           var fy = Math.floor( state.piece.y + y );
-          var pieceBlock = state.piece.figure.orientations[ state.piece.orientation ][ x ][ y ];
           state.field.lines[ fy ].push( fx );
         }
       }
