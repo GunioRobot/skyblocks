@@ -10,9 +10,10 @@ describe( 'embedder', function() {
   });
 
   it( 'should do nothing if piece not landed', function() {
+    var lines = field.lines;
     state.pieceLanded = false;
     embedder.update( state );
-    expect( field.blocks ).toEqual( field.blocks );
+    expect( field.lines ).toEqual( lines );
   });
 
   it( 'should embed the piece into the field if piece is landed', function() {
